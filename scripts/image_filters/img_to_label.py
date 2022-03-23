@@ -1,3 +1,13 @@
+#!usr/bin/env python3
+
+"""
+This tool converts images to labeled data.
+Non-coloured data is labeled as 0 and coloured data is labeled as 1.
+"""
+
+__author__ = "devalk96"
+__version__ = "0.1"
+
 import os
 import numpy as np
 import argparse

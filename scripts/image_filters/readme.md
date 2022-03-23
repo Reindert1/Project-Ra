@@ -1,8 +1,8 @@
 # img to label tool #
 
 ## Tool description
-This tool converts images to labeled data. Used for labeling.
-
+This tool converts images to labeled data. 
+Non-coloured data is labeled as 0 and coloured data is labeled as 1.
 
 ## How to
 Expects commandline input. Inputfile-path (-i) and outputfile-path (-o).
@@ -14,16 +14,15 @@ Expects commandline input. Inputfile-path (-i) and outputfile-path (-o).
 
 
 ### Packages
-|Name                                   |Version              |   
-|---                                    |---                  |
-|Pillow                                 |8.4.0                |
-|numpy                                  |1.20.3               |
+| Name   | Version |   
+|--------|---------|
+| Pillow | 8.4.0   |
+| numpy  | 1.20.3  |
 
 
 
 ## Contact
-
-* S.J. Bouwman
+* S.J. Bouwman (**maintainer**)
   * s.j.bouwman@st.hanze.nl 
 
 * R.F. Visser
