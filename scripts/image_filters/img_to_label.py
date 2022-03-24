@@ -57,7 +57,7 @@ def process_image(input: str) -> np.array:
 
 def save_image(array, output_path):
     print(f"Saving image to {output_path}")
-    # Image.fromarray(array).save(output_path)
+    Image.fromarray(array).save(output_path)
 
 
 def main():
