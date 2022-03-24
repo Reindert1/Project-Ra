@@ -6,7 +6,7 @@ Non-coloured data is labeled as 0 and coloured data is labeled as 1.
 """
 
 __author__ = "devalk96"
-__version__ = "0.1"
+__version__ = "0.2"
 
 import os
 import numpy as np
@@ -36,7 +36,7 @@ def setup_paths(args) -> [str, str]:
     output = args.outfile
     if not output:
         basename = os.path.basename(input)
-        output = basename.split(".")[0] + "_corrected." + basename.split(".")[1]
+        output = input.replace(basename, basename.split(".")[0] + "_corrected." + basename.split(".")[1])
         print(f"No output path provided. Will export to: {output}")
     return input, output
 

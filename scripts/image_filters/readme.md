@@ -5,7 +5,8 @@ This tool converts images to labeled data.
 Non-coloured data is labeled as 0 and coloured data is labeled as 1.
 
 ## How to
-Expects commandline input. Inputfile-path (-i) and outputfile-path (-o).
+Expects commandline input. Inputfile-path (-i) and outputfile-path (-o).  
+Example: ```python3 img_to_label.py -i data/inputfile -o data/outputfile```
 
 ## Installation
 ### Prerequisites
