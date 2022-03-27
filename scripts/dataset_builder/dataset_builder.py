@@ -72,40 +72,64 @@ def build_gaussian(image_array, image, layers=1):
     return gaus_np
 
 
-def add_classifier(array, classifier_array):
+def add_classifier(array, classifier_loc):
     print("Adding classifier")
+    classifier = Image.open(classifier_loc)
+    classifier_array = np.array(classifier)
     classifier_array_flat = np.expand_dims(classifier_array.flatten().transpose(), axis=1)
+
     full_array = np.append(array, classifier_array_flat, axis=1)
     return full_array
 
 
-def read_image(image_tif, classifier_tif):
+def read_image(image_tif): #, classifier_tif):
     print("Reading images")
     image_array = cv.imread(image_tif, cv.IMREAD_GRAYSCALE)
 
-    classifier = Image.open(classifier_tif)
-    classifier_array = np.array(classifier)
+    #classifier = Image.open(classifier_tif)
+    #classifier_array = np.array(classifier)
 
-    return image_array, classifier_array
+    return image_array #, classifier_array
 
 
 def main():
     window_shape = cfg.window
-    image, classifier = read_image(cfg.image_path, cfg.classifier_path)
+    image = read_image(cfg.image_path)
     windows = window_maker(image, window_shape)
 
     data_array = windows_to_dataset(windows)
     data_array = build_gaussian(data_array, image, cfg.gaussian_layers)
 
-    full_array = add_classifier(data_array, classifier)
+    for classifier_layer in cfg.classifier_list:
+        data_array = add_classifier(data_array, classifier_layer)
+
+    if not cfg.one_hot:
+        labels_columns = -len(cfg.classifier_list)
+        artificial_zero = np.all(data_array[:, labels_columns:] == 0, axis=1).astype(int)
+        artificial_zero = np.expand_dims(artificial_zero, axis=1)
+        data_array = np.append(data_array, artificial_zero, axis=1)
+        print(np.unique(artificial_zero))
+        print(data_array[:6])
+        #print(np.where(artificial_zero == 1))
+        #print(artificial_zero[artificial_zero == 0])
+        #print(np.where(data_array[:, -2] == 1))
+        print(data_array[12729])
+        #print(data_array[:6])
+        #np.array_equal(data_array[:, labels_columns:], ([0] * len(cfg.classifier_path))) #(data_array[:, labels_columns:] == ([0] * len(cfg.classifier_path))).all()
+        #print(artificial_zero[:6].astype(int))
+        labels = np.expand_dims(np.argmax(data_array[:, labels_columns:], axis=1), axis=1)
+        #print(np.unique(labels))
+        data_array = np.delete(data_array, np.s_[labels_columns:], axis=1)
+        data_array = np.append(data_array, labels, axis=1)
 
     if cfg.remove_zero:
-        full_array = np.delete(full_array, np.where(full_array[:, -1] == 0)[0], axis=0)
+        data_array = np.delete(data_array, np.where(data_array[:, -1] == 0)[0], axis=0)
 
-    print(full_array.shape)
-    print(full_array[0, :])
+    print(data_array.shape)
+    print(data_array[0, :])
+    print(data_array[6])
 
-    np.save(cfg.save_location, full_array)
+    np.save(cfg.save_location, data_array)
 
     return 0
 
