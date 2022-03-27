@@ -1,6 +1,8 @@
-image_path = "/commons/Themas/Thema11/Giepmans/Maps_satelliteBW.tif"
-classifier_path = "/commons/Themas/Thema11/Giepmans/Maps_labels.tif"
-save_location = "/homes/kanotebomer/Documents/Thema11/Project-Ra/scripts/dataset_builder/total_classification.npy"
-gaussian_layers = 1
-remove_zero = True
+image_path = "/Thema11/Ra/data/Tile_r4-c7_Acquisition Spec 3_452994970.tif"
+classifier_list = ["/Thema11/Ra/data/clean_nuc.tif",
+                   "/Thema11/Ra/data/clean_mito.tif"]
+save_location = "/Thema11/Ra/data/total_classification.npy"
+gaussian_layers = 4
+remove_zero = False
+one_hot = False
 window = (3, 3)
