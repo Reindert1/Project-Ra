@@ -30,12 +30,12 @@ Example: ```python3 img_to_label.py -i data/inputfile -o data/outputfile```
 This tool overlays multiple images to a background.
 
 Example of an overlay:   
-![Example](/docs/images/example.tif)
+![Example](https://github.com/devalk96/Project-Ra/blob/main/scripts/image_filters/docs/images/example.tif)
 
 
 
 ### Guide
-####Arguments: 
+#### Arguments 
 * ```--labelmode``` (toggle)
   * This argument is used when image are being used that only contain 0/1 data. 
    The convert will automatically assign a color.
