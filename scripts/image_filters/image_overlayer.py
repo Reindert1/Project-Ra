@@ -22,11 +22,17 @@ def main():
     _validate_files(args.overlay + [args.background])
     background_img_path: str = args.background
     overlay_img_path: list[str] = args.overlay
-    width, height = [int(x) for x in args.resize]
+
+    if args.resize:
+        width, height = [int(x) for x in args.resize]
+    else:
+        width, height = None, None
 
     img = construct_img(background_img_path, overlay_img_path, width, height)
 
     img.save(args.output)
+
+    print(f"Finished! Saved image at: {args.output}")
 
 
 def change_alpha(image, background_value=(0, 0, 0)):
@@ -51,9 +57,9 @@ def construct_img(background, overlay, width, height) -> Image.Image:
         foreground = change_alpha(foreground, background_value=alpha_col)
         background.paste(foreground, (0, 0), foreground)
 
-    if width & height:
-        print(f"resizing to : {width}px, {height}px")
-        background.resize((int(width), int(height)))
+    if width and height:
+        print(f"Resizing output image to : {width}px, {height}px")
+        background = background.resize((int(width), int(height)))
 
     return background
 
