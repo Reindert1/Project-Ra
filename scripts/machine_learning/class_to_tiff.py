@@ -33,21 +33,23 @@ def model_to_tif(model_file, model_name, data, palette):
     full_pred = loaded_model.predict(data).reshape(16384, 16384)
     full_image = Image.fromarray(full_pred, mode="P")
     full_image.putpalette(palette)
-    full_image.save(f"images/{model_name}.tif")
+    full_image.save(f"/homes/kanotebomer/Documents/Thema11/Project-Ra/scripts/machine_learning/images/{model_name}.tif")
 
 
 def main():
     data_array = np.load(
-        "/homes/kanotebomer/Documents/Thema11/Project-Ra/scripts/dataset_builder/total_classification.npy",
-        allow_pickle=True)[:, :-1]
-    palettedata = [0, 0, 0, 0, 0, 255]
+        #"/homes/kanotebomer/Documents/Thema11/Project-Ra/scripts/dataset_builder/total_classification.npy",
+        "/tmp/ra_data/total_classification.npy",
+        allow_pickle=True) [:, :-1]
+    palettedata = [0, 255, 0, 0, 0, 255, 0, 0, 0]
     num_entries_palette = 256
     num_bands = len("RGB")
     num_entries_data = len(palettedata) // num_bands
     palettedata.extend(palettedata[:num_bands]
                        * (num_entries_palette
                           - num_entries_data))
-    model_to_tif("models/SGD.sav", "SGD", data_array, palettedata)
+    model_to_tif("/homes/kanotebomer/Documents/Thema11/Project-Ra/scripts/machine_learning/models/GaussianNB.sav", "GaussianNB",
+                 data_array, palettedata)
 
     return 0
 
