@@ -41,7 +41,7 @@ def main():
         #"/homes/kanotebomer/Documents/Thema11/Project-Ra/scripts/dataset_builder/total_classification.npy",
         "/tmp/ra_data/total_classification.npy",
         allow_pickle=True) [:, :-1]
-    palettedata = [0, 0, 0, 0, 0, 255, 0, 255, 0]
+    palettedata = [0, 255, 0, 0, 0, 255, 0, 0, 0]
     num_entries_palette = 256
     num_bands = len("RGB")
     num_entries_data = len(palettedata) // num_bands
