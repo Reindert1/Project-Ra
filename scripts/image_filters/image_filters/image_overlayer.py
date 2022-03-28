@@ -28,9 +28,9 @@ def main():
     else:
         width, height = None, None
 
-    img = construct_img(background_img_path, overlay_img_path, width, height)
+    img = construct_img(background_img_path, overlay_img_path)
 
-    img.save(args.output)
+    save_img(img, args.output, width, height)
 
     print(f"Finished! Saved image at: {args.output}")
 
@@ -48,7 +48,7 @@ def change_alpha(image, background_value=(0, 0, 0)):
     return Image.fromarray(data)
 
 
-def construct_img(background, overlay, width, height) -> Image.Image:
+def construct_img(background, overlay) -> Image.Image:
     alpha_col = (0, 0, 0)
     background = Image.open(background).convert("RGBA")
     for e, image in enumerate(overlay):
@@ -56,11 +56,6 @@ def construct_img(background, overlay, width, height) -> Image.Image:
         foreground = Image.open(image).convert("RGBA")
         foreground = change_alpha(foreground, background_value=alpha_col)
         background.paste(foreground, (0, 0), foreground)
-
-    if width and height:
-        print(f"Resizing output image to : {width}px, {height}px")
-        background = background.resize((int(width), int(height)))
-
     return background
 
 
@@ -68,6 +63,13 @@ def _validate_files(files):
     for file in files:
         if not os.path.exists(file):
             raise FileExistsError(f"File at: {file} does not exist!")
+
+
+def save_img(img: Image.Image, output_path: str, width=None, height=None):
+    if width and height:
+        print(f"Resizing output image to : {width}px, {height}px")
+        img = img.resize((int(width), int(height)))
+    img.save(output_path)
 
 
 def argparser():
@@ -80,7 +82,8 @@ def argparser():
 
     parser.add_argument("--output", "-O", required=True)
 
-    parser.add_argument("--resize", required=False, help="Resize the image format= 'width height", nargs=2)
+    parser.add_argument("--resize", required=False, help="Resize the image format= 'width height",
+                        nargs=2)
 
     args = parser.parse_args()
     return args
