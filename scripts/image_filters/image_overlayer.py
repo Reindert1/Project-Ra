@@ -20,11 +20,13 @@ PIL.Image.MAX_IMAGE_PIXELS = 268435460
 def main():
     args = argparser()
     _validate_files(args.overlay + [args.background])
-    alpha_col = (255, 255, 255)
     background_img_path: str = args.background
     overlay_img_path: list[str] = args.overlay
+    width, height = [int(x) for x in args.resize]
 
-    img = construct_img(background_img_path, overlay_img_path)
+    img = construct_img(background_img_path, overlay_img_path, width, height)
+
+    img.save(args.output)
 
 
 def change_alpha(image, background_value=(0, 0, 0)):
@@ -40,14 +42,20 @@ def change_alpha(image, background_value=(0, 0, 0)):
     return Image.fromarray(data)
 
 
-def construct_img(background, overlay):
+def construct_img(background, overlay, width, height) -> Image.Image:
     alpha_col = (0, 0, 0)
     background = Image.open(background).convert("RGBA")
-    for image in overlay:
+    for e, image in enumerate(overlay):
+        print(f"Overlaying image {e + 1}/{len(overlay)}\t{image}")
         foreground = Image.open(image).convert("RGBA")
         foreground = change_alpha(foreground, background_value=alpha_col)
         background.paste(foreground, (0, 0), foreground)
-    background.save("data/output.tif")
+
+    if width & height:
+        print(f"resizing to : {width}px, {height}px")
+        background.resize((int(width), int(height)))
+
+    return background
 
 
 def _validate_files(files):
@@ -63,6 +71,10 @@ def argparser():
 
     parser.add_argument('--overlay', "-o", nargs='+',
                         help="overlay images in order", required=True)
+
+    parser.add_argument("--output", "-O", required=True)
+
+    parser.add_argument("--resize", required=False, help="Resize the image format= 'width height", nargs=2)
 
     args = parser.parse_args()
     return args
