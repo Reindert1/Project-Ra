@@ -9,33 +9,54 @@ __version__ = 0.1
 
 
 # Imports
+import pickle
+import sys
+
+import numpy as np
+import pandas as pd
+from sklearn import metrics
 from sklearn.ensemble import AdaBoostClassifier
+from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import LabelEncoder
 from sklearn.tree import DecisionTreeClassifier
 
 
-class adaboost:
-    def __init__(self, dataset):
+class AdaBoost:
+    def __init__(self, data_array, dataset):
+        self.data_array = data_array
         self.dataset = dataset
 
-    def fit(self):
-        x_train, x_val, y_train, y_val = train_test_split(self.dataset[:, :-1], data_array[:, -1], random_state=0)
-        for label in dataset.columns:
-            print("Running:", label)
-            dataset[label] = LabelEncoder().fit(self.dataset[label]).transform(self.dataset[label])
+        self.model = None
 
-        X = x_train.drop(['Label'], axis=1)
-        Y = y_train['Label']
+        AdaBoost.fit(self)
+        AdaBoost.export_model(self)
+
+    def fit(self):
+        x_train, x_val, y_train, y_val = train_test_split(self.data_array[:, :-1], self.data_array[:, -1], random_state=0)
 
         print("Initializing booster...")
-        AdaBoost = AdaBoostClassifier(n_estimators=5, learning_rate=0.1, algorithm='SAMME')
+        model = AdaBoostClassifier(n_estimators=5, learning_rate=0.1, algorithm='SAMME')
 
-        print("Fitting...")
-        AdaBoost.fit(X, Y)
+        print("Fitting training data...")
+        model.fit(x_train, y_train)
 
-        prediction = AdaBoost.score(X, Y)
+        prediction = model.score(x_train, y_train)
 
-        print('The accuracy is: ', prediction * 100, '%')
+        print('The accuracy of training is: ', prediction * 100, '%')
+
+        print("Running validation data...")
+        model.predict(x_val)
+
+        prediction = model.score(x_val, y_val)
+        print("Accuracy:", metrics.accuracy_score(y_val, prediction))
+
+        # Setting model
+        self.model = model
+        return self
+
+    def export_model(self):
+        print("Pickle dump")
+        pickle.dump(self.model, open("Booster.sav", 'wb'))
 
 
 def main():
@@ -46,7 +67,7 @@ def main():
                                                 'Pixel_val6', 'Pixel_val7', 'Pixel_val8', 'Pixel_val9', 'Gauss1',
                                                 'Gauss2', 'Gauss3', 'Gauss4', 'Label'])
 
-    adaboost(dataset)
+    AdaBoost(data_array, dataset)
 
     return 0
 
