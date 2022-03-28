@@ -18,7 +18,7 @@ PIL.Image.MAX_IMAGE_PIXELS = 268435460
 
 
 def process(arr: np.array, replacement=255) -> np.array:
-    print("Processing image...\nThis might take a while...")
+    print("Processing image...\t(This might take a while)")
     arr[arr != 0] = replacement
     return arr
 
