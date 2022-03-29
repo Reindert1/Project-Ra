@@ -70,9 +70,6 @@ Images are used which are already colored. Example black and red image.
 | numpy  | 1.20.3  |
 
 
-
-
-
 ## Contact
 * S.J. Bouwman (**maintainer**)
   * s.j.bouwman@st.hanze.nl 
