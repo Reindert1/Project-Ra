@@ -21,7 +21,7 @@ def main():
     args = argparser()
 
     _validate_files(args.overlay + [args.background])
-    img = construct_img(args.background, args.overlay, args.labelmode)
+    img = construct_img(args.background, args.overlay)
     if args.resize:
         width, height = [int(x) for x in args.resize]
     else:
@@ -91,7 +91,7 @@ def labeled_file_check(image: Image.Image):
         return 0
 
 
-def construct_img(background, overlay, labelmode) -> Image.Image:
+def construct_img(background, overlay) -> Image.Image:
     alpha_col = (0, 0, 0)
     background = Image.open(background).convert("RGBA")
     for e, image in enumerate(overlay):
@@ -101,11 +101,6 @@ def construct_img(background, overlay, labelmode) -> Image.Image:
             foreground = label_to_color(Image.open(image).convert("RGBA"), e)
         else:
             foreground = Image.open(image).convert("RGBA")
-
-        # if labelmode:
-        #     foreground = label_to_color(Image.open(image).convert("RGBA"), e)
-        # else:
-        #     foreground = Image.open(image).convert("RGBA")
 
         foreground = change_alpha(foreground, background_value=alpha_col)
         background.paste(foreground, (0, 0), foreground)
@@ -140,9 +135,6 @@ def argparser():
 
     parser.add_argument("--resize", required=False, help="Resize the image format= 'width height",
                         nargs=2)
-
-    parser.add_argument('--labelmode', action='store_true',
-                        help="Image contains only 0 - 1 pixelvalues")
 
     parser.set_defaults(labelmode=False)
 
