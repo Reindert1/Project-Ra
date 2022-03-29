@@ -77,16 +77,35 @@ def label_to_color(image: Image.Image, colornum: int) -> Image.Image:
     return Image.fromarray(data)
 
 
+def labeled_file_check(image: Image.Image):
+    if image.mode != "L":
+        print("\t\t...Image doesn't open in L mode. File is (probably) unlabeled")
+        return 0
+
+    colors = image.getcolors()
+    if colors[0][1] == 0 and colors[1][1] == 1 and len(colors) == 2:
+        print("\t\t...Image is labeled (contains only two colors)")
+        return 1
+    else:
+        print("\t\t...Image is not labeled (contains more then two colors): ", image.getcolors())
+        return 0
+
+
 def construct_img(background, overlay, labelmode) -> Image.Image:
     alpha_col = (0, 0, 0)
-    labelcolors = {}
     background = Image.open(background).convert("RGBA")
     for e, image in enumerate(overlay):
         print(f"Overlaying image {e + 1}/{len(overlay)}\t{image}")
-        if labelmode:
+
+        if labeled_file_check(Image.open(image)):
             foreground = label_to_color(Image.open(image).convert("RGBA"), e)
         else:
             foreground = Image.open(image).convert("RGBA")
+
+        # if labelmode:
+        #     foreground = label_to_color(Image.open(image).convert("RGBA"), e)
+        # else:
+        #     foreground = Image.open(image).convert("RGBA")
 
         foreground = change_alpha(foreground, background_value=alpha_col)
         background.paste(foreground, (0, 0), foreground)
