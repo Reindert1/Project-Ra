@@ -25,7 +25,7 @@ Non-coloured data is labeled as 0 and coloured data is labeled as 1.
 Expects commandline input. Inputfile-path (-i) and outputfile-path (-o).  
 Example: ```python3 img_to_label.py -i data/inputfile -o data/outputfile```
 
-##image_overlayer.py
+## image_overlayer.py
 ### About 
 This tool overlays multiple images to a background.
 
