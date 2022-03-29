@@ -16,7 +16,7 @@ This package contains various scripts used in the pipeline for image filtering.
 - [Packages](###Packages)
 - [Contact](#contact)
 
-##img_to_label.py  
+## img_to_label.py  
 ### About 
 This tool converts images to labeled data. 
 Non-coloured data is labeled as 0 and coloured data is labeled as 1.
