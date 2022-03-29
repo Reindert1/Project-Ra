@@ -36,9 +36,9 @@ Example of an overlay:
 
 ### Guide
 #### Arguments 
-* ```--labelmode``` (toggle)
-  * This argument is used when image are being used that only contain 0/1 data. 
-   The convert will automatically assign a color.
+* ```--labelmode``` (toggle) *DEPRECATED*
+  * ~~This argument is used when image are being used that only contain 0/1 data. 
+   The convert will automatically assign a color.~~
 
 * ```--resize 'width' 'height'``` (not-required)
   * Resizes the output image to the provided dimensions
