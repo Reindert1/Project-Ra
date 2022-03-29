@@ -16,7 +16,7 @@ This package contains various scripts used in the pipeline for image filtering.
 - [Packages](###Packages)
 - [Contact](#contact)
 
-##img_to_label.py  
+## img_to_label.py  
 ### About 
 This tool converts images to labeled data. 
 Non-coloured data is labeled as 0 and coloured data is labeled as 1.
@@ -25,17 +25,17 @@ Non-coloured data is labeled as 0 and coloured data is labeled as 1.
 Expects commandline input. Inputfile-path (-i) and outputfile-path (-o).  
 Example: ```python3 img_to_label.py -i data/inputfile -o data/outputfile```
 
-##image_overlayer.py
+## image_overlayer.py
 ### About 
 This tool overlays multiple images to a background.
 
 Example of an overlay:   
-![Example](/docs/images/example.tif)
+![Example](https://github.com/devalk96/Project-Ra/blob/main/scripts/image_filters/docs/images/example.tif)
 
 
 
 ### Guide
-####Arguments: 
+#### Arguments 
 * ```--labelmode``` (toggle)
   * This argument is used when image are being used that only contain 0/1 data. 
    The convert will automatically assign a color.
