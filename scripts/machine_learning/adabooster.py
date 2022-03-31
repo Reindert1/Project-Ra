@@ -2,9 +2,13 @@
 
 """
     Boosting algorithm using Adaboost
+        - runs sklearn adaboost ensemble learner
+        - trains on training data and runs validation
+        - exports model
+        - visualizes model
 """
 
-__author__ = "Reindert"
+__author__ = "Reindert1"
 __version__ = 0.1
 
 
@@ -17,8 +21,7 @@ import pandas as pd
 from sklearn import metrics
 from sklearn.ensemble import AdaBoostClassifier
 from sklearn.model_selection import train_test_split
-from sklearn.preprocessing import LabelEncoder
-from sklearn.tree import DecisionTreeClassifier
+from PIL import Image
 
 
 class AdaBoost:
@@ -58,6 +61,13 @@ class AdaBoost:
         print("Pickle dump")
         pickle.dump(self.model, open("Booster.sav", 'wb'))
 
+    def model_to_tif(self, palette):
+        loaded_model = pickle.load(open(self.model, 'rb'))
+        full_pred = loaded_model.predict(self.data_array).reshape(16384, 16384)
+        full_image = Image.fromarray(full_pred, mode="P")
+        full_image.putpalette(palette)
+        full_image.save("Booster.tif")
+
 
 def main():
     data_array = np.load("../../data/r4-c7_nucleus.npy", allow_pickle=True)
@@ -68,6 +78,15 @@ def main():
                                                 'Gauss2', 'Gauss3', 'Gauss4', 'Label'])
 
     AdaBoost(data_array, dataset)
+
+    palettedata = [0, 0, 0, 0, 0, 255]
+    num_entries_palette = 256
+    num_bands = len("RGB")
+    num_entries_data = len(palettedata) // num_bands
+    palettedata.extend(palettedata[:num_bands]
+                       * (num_entries_palette
+                          - num_entries_data))
+    AdaBoost.model_to_tif(palettedata)
 
     return 0
 
