@@ -31,7 +31,7 @@ def test_trainer(name_model, model, x_train, x_val, y_train, y_val):
         print(f"current: {name_model}")
         model.fit(x_train, y_train)
 
-        filename = f'models/{name_model}.sav'
+        filename = f'/homes/kanotebomer/Documents/Thema11/Project-Ra/scripts/machine_learning/models/{name_model}.sav'
         pickle.dump(model, open(filename, 'wb'))
 
         y_pred = model.predict(x_val)
@@ -63,7 +63,7 @@ def sgdclass(x_train, x_val, y_train, y_val, classes):
             model.partial_fit(mini_batch_x, mini_batch_y,
                              classes=classes)
 
-    filename = f'models/SGD.sav'
+    filename = f'/homes/kanotebomer/Documents/Thema11/Project-Ra/scripts/machine_learning/models/SGD_mit.sav'
     pickle.dump(model, open(filename, 'wb'))
 
     y_pred = model.predict(x_val)
@@ -80,26 +80,29 @@ def model_to_tif(model_file, model_name, data, palette):
 
 
 def main():
-    data_array = np.load("/homes/kanotebomer/Documents/Thema11/Project-Ra/scripts/dataset_builder/total_classification.npy", allow_pickle=True)
+    #data_array = np.load("/homes/kanotebomer/Documents/Thema11/Project-Ra/scripts/dataset_builder/total_classification.npy", allow_pickle=True)
+    data_array = np.load(
+        "/tmp/ra_data/total_classification.npy",
+        allow_pickle=True)
     print(data_array.shape)
     unique_colors_train = np.unique(data_array[:, -1])
     print(unique_colors_train)
     #data_array = np.unique(data_array, axis=0)
     #print(data_array.shape)
 
-    # models = {  # 'MultinomalNB': MultinomialNB(),
-    #     #'Kmeans': MiniBatchKMeans(n_clusters=5, random_state=0),  # , batch_size=5000, max_iter=20),
-    #     'GaussianNB': GaussianNB()
-    #     #'DecisionTreeClassifier': DecisionTreeClassifier(),
-    #     #'SGDClassifier': SGDClassifier(max_iter=100, tol=1e-3, random_state=0)
-    # }
+    models = {  # 'MultinomalNB': MultinomialNB(),
+        #'Kmeans': MiniBatchKMeans(n_clusters=5, random_state=0),  # , batch_size=5000, max_iter=20),
+        'GaussianNB': GaussianNB(),
+        'DecisionTreeClassifier': DecisionTreeClassifier(min_samples_split=100, random_state=18),
+        #'SGDClassifier': SGDClassifier(max_iter=100, tol=1e-3, random_state=0)
+    }
     #
     x_train, x_val, y_train, y_val = train_test_split(data_array[:, :-1], data_array[:, -1], test_size=0.3,
                                                       random_state=0)
     #
-    # for name, model in models.items():
-    #     test_trainer(name, model, x_train, x_val, y_train, y_val)
-    sgdclass(x_train, x_val, y_train, y_val, unique_colors_train)
+    for name, model in models.items():
+        test_trainer(name, model, x_train, x_val, y_train, y_val)
+    #sgdclass(x_train, x_val, y_train, y_val, unique_colors_train)
 
     return 0
 
