@@ -26,8 +26,11 @@ def model_to_tif(model_file, save_loc, dataset_loc, palette, original_image_loc)
     full_pred = []
     #full_pred = np.empty()
     for val_batch in validation_generator(x_data, 50000):
-        #np.append(full_pred, loaded_model.predict(val_batch))
-        full_pred.extend(loaded_model.predict(val_batch))
+        #np.append(full_pred, loaded_model.predict(val_batch))\
+        #print(val_batch)
+        pred = loaded_model.predict(np.array(val_batch))
+        #print(np.unique(pred))
+        full_pred.extend(pred)
 
     full_pred = np.asarray(full_pred)
     image_array = cv.imread(original_image_loc, cv.IMREAD_GRAYSCALE)
@@ -35,6 +38,7 @@ def model_to_tif(model_file, save_loc, dataset_loc, palette, original_image_loc)
     del image_array
     gc.collect()
     full_pred = np.reshape(full_pred, shape)
+    print(np.unique(full_pred))
 
     #full_pred = full_pred.reshape(16384, 16384)
     full_image = Image.fromarray(full_pred, mode="P")
@@ -45,14 +49,14 @@ def model_to_tif(model_file, save_loc, dataset_loc, palette, original_image_loc)
 def main():
     np.random.seed(666)
     palettedata = []
-    #classifiers_list = snakemake.config["classifiers"]
-    for _ in range(2):
+    classifiers_list = snakemake.config["classifiers"]
+    for _ in range(len(classifiers_list)):
         palettedata.extend(list(np.random.choice(range(256), size=3)))
         print(palettedata)
     num_entries_palette = 256
     num_bands = len("RGB")
     num_entries_data = len(palettedata) // num_bands
-    palettedata.extend(palettedata[:num_bands]
+    palettedata.extend([0, 0, 0]
                        * (num_entries_palette
                           - num_entries_data))
 
