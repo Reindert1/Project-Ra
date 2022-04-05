@@ -79,7 +79,7 @@ def find_optimal(x_train, x_val, y_train, y_val, classes):
 
 def train_sgd(x_train, x_val, y_train, y_val, classes, optimal_params, save_loc):
     model = SGDClassifier(random_state=0,
-                          alpha=optimal_params["alpha"], l1_ratio=optimal_params["l1_ratio"], loss=optimal_params["l1_ratio"])
+                          alpha=optimal_params["alpha"], l1_ratio=optimal_params["l1_ratio"], loss=optimal_params["loss"])
 
     n_iter = 10
     for n in range(n_iter):
