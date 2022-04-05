@@ -30,13 +30,14 @@ class AdaBoost:
         self.dataset = dataset
 
         self.model = None
+        self.x_val = None
 
         AdaBoost.fit(self)
         AdaBoost.export_model(self)
 
     def fit(self):
         x_train, x_val, y_train, y_val = train_test_split(self.data_array[:, :-1], self.data_array[:, -1], random_state=0)
-
+        self.x_val = x_val
         print("Initializing booster...")
         model = AdaBoostClassifier(n_estimators=5, learning_rate=0.1, algorithm='SAMME')
 
@@ -45,13 +46,13 @@ class AdaBoost:
 
         prediction = model.score(x_train, y_train)
 
-        print('The accuracy of training is: ', prediction * 100, '%')
+        print('The accuracy on training data is: ', prediction * 100, '%')
 
         print("Running validation data...")
         model.predict(x_val)
 
         prediction = model.score(x_val, y_val)
-        print("Accuracy:", metrics.accuracy_score(y_val, prediction))
+        print('The accuracy on validation data is: ', prediction * 100, '%')
 
         # Setting model
         self.model = model
@@ -60,17 +61,26 @@ class AdaBoost:
     def export_model(self):
         print("Pickle dump")
         pickle.dump(self.model, open("Booster.sav", 'wb'))
+        AdaBoost.model_to_tif(self)
 
-    def model_to_tif(self, palette):
-        loaded_model = pickle.load(open(self.model, 'rb'))
-        full_pred = loaded_model.predict(self.data_array).reshape(16384, 16384)
+    def model_to_tif(self):
+        palettedata = [0, 0, 0, 0, 0, 255]
+        num_entries_palette = 256
+        num_bands = len("RGB")
+        num_entries_data = len(palettedata) // num_bands
+        palettedata.extend(palettedata[:num_bands]
+                           * (num_entries_palette
+                              - num_entries_data))
+
+        loaded_model = self.model
+        full_pred = loaded_model.predict(self.x_val).reshape(16384, 16384)
         full_image = Image.fromarray(full_pred, mode="P")
-        full_image.putpalette(palette)
+        full_image.putpalette(palettedata)
         full_image.save("Booster.tif")
 
 
 def main():
-    data_array = np.load("../../data/r4-c7_nucleus.npy", allow_pickle=True)
+    data_array = np.load("r4-c7_nucleus.npy", allow_pickle=True)
     print("Shape:", data_array.shape)
 
     dataset = pd.DataFrame(data_array, columns=['Pixel_val1', 'Pixel_val2', 'Pixel_val3', 'Pixel_val4', 'Pixel_val5',
@@ -78,15 +88,6 @@ def main():
                                                 'Gauss2', 'Gauss3', 'Gauss4', 'Label'])
 
     AdaBoost(data_array, dataset)
-
-    palettedata = [0, 0, 0, 0, 0, 255]
-    num_entries_palette = 256
-    num_bands = len("RGB")
-    num_entries_data = len(palettedata) // num_bands
-    palettedata.extend(palettedata[:num_bands]
-                       * (num_entries_palette
-                          - num_entries_data))
-    AdaBoost.model_to_tif(palettedata)
 
     return 0
 
