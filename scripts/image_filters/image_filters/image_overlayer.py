@@ -68,7 +68,7 @@ def label_to_color(image: Image.Image, colornum: int) -> Image.Image:
 
     r1, g1, b1 = (1, 1, 1)
     r2, g2, b2, a2 = colors[colornum]
-    print(f"\tUsed color is: rgba{colors[colornum]}")
+    print(f"\t\t--> Used color is: rgba{colors[colornum]}")
 
     red, green, blue, alpha = data[:, :, 0], data[:, :, 1], data[:, :, 2], data[:, :, 3]
     mask = (red == r1) & (green == g1) & (blue == b1)
@@ -79,15 +79,15 @@ def label_to_color(image: Image.Image, colornum: int) -> Image.Image:
 
 def labeled_file_check(image: Image.Image):
     if image.mode != "L":
-        print("\t\t...Image doesn't open in L mode. File is (probably) unlabeled")
+        print("\t\t--> Image doesn't open in L mode. File is (probably) unlabeled")
         return 0
 
     colors = image.getcolors()
     if colors[0][1] == 0 and colors[1][1] == 1 and len(colors) == 2:
-        print("\t\t...Image is labeled (contains only two colors)")
+        print("\t\t--> Image is labeled (contains only two colors)")
         return 1
     else:
-        print("\t\t...Image is not labeled (contains more then two colors): ", image.getcolors())
+        print("\t\t--> Image is not labeled (contains more then two colors): ", image.getcolors())
         return 0
 
 
@@ -135,8 +135,6 @@ def argparser():
 
     parser.add_argument("--resize", required=False, help="Resize the image format= 'width height",
                         nargs=2)
-
-    parser.set_defaults(labelmode=False)
 
     args = parser.parse_args()
     return args
