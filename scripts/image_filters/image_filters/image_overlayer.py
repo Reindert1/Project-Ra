@@ -95,7 +95,7 @@ def construct_img(background, overlay) -> Image.Image:
     alpha_col = (0, 0, 0)
     background = Image.open(background).convert("RGBA")
     for e, image in enumerate(overlay):
-        print(f"Overlaying image {e + 1}/{len(overlay)}\t{image}")
+        print(f"Overlaying image {e + 1}/{len(overlay)}:\t{image}")
 
         if labeled_file_check(Image.open(image)):
             foreground = label_to_color(Image.open(image).convert("RGBA"), e)
@@ -114,7 +114,7 @@ def _validate_files(files):
 
 
 def save_img(img: Image.Image, output_path: str, width=None, height=None):
-    print("Saving image...")
+    print(f"Saving final image...")
     img = img.convert("P")
 
     if width and height:
