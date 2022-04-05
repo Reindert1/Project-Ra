@@ -68,7 +68,7 @@ def label_to_color(image: Image.Image, colornum: int) -> Image.Image:
 
     r1, g1, b1 = (1, 1, 1)
     r2, g2, b2, a2 = colors[colornum]
-    print(f"\tUsed color is: rgba{colors[colornum]}")
+    print(f"\t\t...Used color is: rgba{colors[colornum]}")
 
     red, green, blue, alpha = data[:, :, 0], data[:, :, 1], data[:, :, 2], data[:, :, 3]
     mask = (red == r1) & (green == g1) & (blue == b1)
@@ -135,8 +135,6 @@ def argparser():
 
     parser.add_argument("--resize", required=False, help="Resize the image format= 'width height",
                         nargs=2)
-
-    parser.set_defaults(labelmode=False)
 
     args = parser.parse_args()
     return args

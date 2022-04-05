@@ -49,7 +49,6 @@ def process_image(input: str) -> np.array:
     else:
         print(f"Loaded image in mode: {image.mode}")
 
-    print("Converting to array...")
     arr: np.array = np.array(image)
     processed_array = process(arr, replacement=1)
     return processed_array
