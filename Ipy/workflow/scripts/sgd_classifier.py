@@ -2,14 +2,10 @@ import pickle
 
 import numpy as np
 import sys
-from dask.distributed import Client, LocalCluster
-import dask.array as da
-from dask_ml.model_selection import HyperbandSearchCV
 from sklearn.linear_model import SGDClassifier
-from dask_ml.model_selection import train_test_split
 from scipy.stats import uniform, loguniform
 from sklearn import metrics
-from skopt.space import Real, Integer
+from skopt.space import Real, Integer, Categorical
 from skopt.utils import use_named_args
 from skopt import gp_minimize
 import h5py
@@ -33,18 +29,22 @@ def find_optimal(x_train, x_val, y_train, y_val, classes):
     #           'l1_ratio': uniform(0, 1)}
 
     space = [Real(10 ** -5, 10 ** 0, "log-uniform", name='alpha'),
-             Real(0, 1, name='l1_ratio')]
+             Real(0, 1, name='l1_ratio'),
+             Categorical(['hinge', 'log', 'modified_huber', 'squared_hinge'], name='loss')
+             ]
 
     @use_named_args(space)
     def objective(**params):
-        model = SGDClassifier(tol=1e-3, penalty='elasticnet', random_state=0)
+        #model = SGDClassifier(tol=1e-3, penalty='elasticnet', random_state=0)
+        model = SGDClassifier(random_state=0)
         model.set_params(**params)
 
-        n_iter = 1
+        n_iter = 5
         for n in range(n_iter):
             print(n)
 
             for mini_batch_x, mini_batch_y in batch_generator(x_train, y_train, 50000):
+                #print(np.unique(y_train))
                 # with parallel_backend('threading', n_jobs=-1):
                 model.partial_fit(mini_batch_x, mini_batch_y,
                                   classes=classes)
@@ -55,6 +55,10 @@ def find_optimal(x_train, x_val, y_train, y_val, classes):
         accurary = metrics.accuracy_score(y_val, y_pred)
         loss = 1 - accurary
         print("Accuracy: ", accurary)
+        unique = np.unique(y_pred)
+        if len(unique) == 1:
+            print("Accuracy set to 0, so loss == 1")
+            return 1
 
         return loss
 
@@ -67,16 +71,17 @@ def find_optimal(x_train, x_val, y_train, y_val, classes):
     print(res_gp.x)
 
     optimal_params = {'alpha': res_gp.x[0],
-                      'l1_ratio': res_gp.x[1]}
+                      'l1_ratio': res_gp.x[1],
+                      'loss': res_gp.x[2]}
     print(optimal_params)
     return optimal_params
 
 
 def train_sgd(x_train, x_val, y_train, y_val, classes, optimal_params, save_loc):
-    model = SGDClassifier(tol=1e-3, penalty='elasticnet', random_state=0,
-                          alpha=optimal_params["alpha"], l1_ratio=optimal_params["l1_ratio"])
+    model = SGDClassifier(random_state=0,
+                          alpha=optimal_params["alpha"], l1_ratio=optimal_params["l1_ratio"], loss=optimal_params["loss"])
 
-    n_iter = 1
+    n_iter = 10
     for n in range(n_iter):
         print(n)
 
