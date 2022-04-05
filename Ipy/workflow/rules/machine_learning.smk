@@ -13,3 +13,11 @@ rule sgd_classifier:
         config["dataset_dir"] + "models/SGD.sav"
     script:
         "../scripts/sgd_classifier.py"
+
+rule gaussian_nb:
+    input:
+        config["dataset_dir"] + "dataset/train.h5py"
+    output:
+        config["dataset_dir"] + "models/GaussianNB.sav"
+    script:
+        "../scripts/gaussiannb.py"

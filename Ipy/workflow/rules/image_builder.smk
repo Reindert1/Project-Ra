@@ -6,7 +6,7 @@ rule classifier_to_tif:
         model=config["dataset_dir"] + "models/{model_name}.sav",
         dataset=config["dataset_dir"] + "dataset/total_features_{classifier}.npy",
     output:
-        config["dataset_dir"] + "images/{classifier}_{model_name}.tif"
+        config["results_dir"] + "images/{classifier}_{model_name}.tif"
     params:
         original_image_location=get_original_image_location
     script:
