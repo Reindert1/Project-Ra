@@ -57,8 +57,6 @@ Images are used which are already colored. Example black and red image.
 ```python3 image_overlayer.py -b data/background.tif --overlay data/overlay1.tif data/overlay2.tif -O data/output.tif```
 
 
-
-
 ## Prerequisites
 * Python 
   * Version 3.6
@@ -68,9 +66,6 @@ Images are used which are already colored. Example black and red image.
 |--------|---------|
 | Pillow | 8.4.0   |
 | numpy  | 1.20.3  |
-
-
-
 
 
 ## Contact

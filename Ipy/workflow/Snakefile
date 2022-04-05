@@ -1,0 +1,16 @@
+configfile: "config/config.yaml"
+
+rule all:
+    input:
+        #config["dataset_dir"] + "dataset/total_features_train_data.npy",
+        #config["dataset_dir"] + "classifiers/full_classifier.npy"
+        #config["dataset_dir"] + "dataset/full_classification.npy"
+        #config["dataset_dir"] + "dataset/train.h5py"
+        #config["dataset_dir"] + "model/SGD.sav"
+        config["dataset_dir"] + "images/r5_SGD.tif"
+
+include: "rules/feature_extraction.smk"
+include: "rules/combine.smk"
+include: "rules/classifier_processing.smk"
+include: "rules/machine_learning.smk"
+include: "rules/image_builder.smk"

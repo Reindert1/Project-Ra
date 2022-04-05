@@ -1,0 +1,17 @@
+datadir: /Thema11/Ra/data/
+
+classifiers:
+#  mitchodira: r4-c7_mithochondria.tif
+  nucleus: r4-c7_nucleus.tif
+
+train_data: Tile_r4-c7_Acquisition Spec 3_452994970.tif
+
+dataset_dir: /Thema11/Ipy/datasets/
+results_dir: /Thema11/Ipy/results2/
+
+segment:
+  r5: Tile_r4-c4_Acquisition Spec 3_452994970.tif
+
+gaussian_layers: 4
+window_size:
+  !!python/tuple [3,3]
