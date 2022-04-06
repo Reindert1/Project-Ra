@@ -7,7 +7,8 @@ rule all:
         #config["dataset_dir"] + "dataset/full_classification.npy"
         #config["dataset_dir"] + "dataset/train.h5py"
         #config["dataset_dir"] + "model/SGD.sav"
-        config["dataset_dir"] + "images/r5_SGD.tif"
+        config["results_dir"] + "images/r5_GaussianNB.tif",
+        config["results_dir"] + "images/r5_SGD.tif"
 
 include: "rules/feature_extraction.smk"
 include: "rules/combine.smk"
