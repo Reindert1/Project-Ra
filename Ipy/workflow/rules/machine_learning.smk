@@ -21,3 +21,11 @@ rule gaussian_nb:
         config["dataset_dir"] + "models/GaussianNB.sav"
     script:
         "../scripts/gaussiannb.py"
+
+rule zero_r:
+    input:
+        config["dataset_dir"] + "dataset/train.h5py"
+    output:
+        config["dataset_dir"] + "models/ZeroR.sav"
+    script:
+        "../scripts/zero_r.py"

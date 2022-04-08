@@ -1,11 +1,3 @@
-configfile: "config/config.yaml"
-
-ALL_DATA = config["segment"]
-print(ALL_DATA)
-print()
-ALL_DATA["train_data"] = config["train_data"]
-print(ALL_DATA)
-
 def get_input_image_location(wildcards):
     return config["datadir"] + ALL_DATA[wildcards.image]
 

@@ -11,3 +11,12 @@ rule classifier_to_tif:
         original_image_location=get_original_image_location
     script:
         "../scripts/classifier_to_tiff.py"
+
+rule image_overlayer:
+    input:
+        background=get_original_image_location,
+        overlay=config["results_dir"] + "images/{classifier}_{model_name}.tif",
+    output:
+        config["results_dir"] + "images/overlayed/{classifier}_{model_name}_overlay.tif"
+    script:
+        "../scripts/image_overlayer.py"

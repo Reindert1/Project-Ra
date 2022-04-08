@@ -1,17 +1,23 @@
-datadir: /commons/Themas/Thema11/Giepmans/
+datadir: /Thema11/Ra/data/
 
 classifiers:
-#  mitchodira: r4-c7_mithochondria.tif
-  nucleus: work/r4-c7_nucleus.tif
+  mitchodira: r4-c7_mithochondria.tif
+  nucleus: r4-c7_nucleus.tif
 
 train_data: Tile_r4-c7_Acquisition Spec 3_452994970.tif
 
-dataset_dir: /tmp/ra_data/
-results_dir: /commons/Themas/Thema11/Giepmans/work/
+dataset_dir: /Thema11/Ipy/results/
+results_dir: /Thema11/Ipy/results/
 
 segment:
   r5: Tile_r4-c4_Acquisition Spec 3_452994970.tif
+  r6: Tile_r4-c4_Acquisition Spec 3_452994970.tif
 
 gaussian_layers: 4
 window_size:
   !!python/tuple [3,3]
+
+algorithms:
+  - SGD
+  - GaussianNB
+  - ZeroR
