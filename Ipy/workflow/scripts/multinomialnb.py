@@ -14,11 +14,12 @@ import h5py
 import numpy as np
 from sklearn import metrics
 from sklearn.naive_bayes import MultinomialNB
+from sklearn.utils import compute_sample_weight
 
 
-def batch_generator(instances, ys, batch_size):
+def batch_generator(instances, ys, batch_size, weights):
     for i in range(0, len(instances), batch_size):
-        yield instances[i:i+batch_size], ys[i:i+batch_size]
+        yield instances[i:i+batch_size], ys[i:i+batch_size], weights[i:i+batch_size]
 
 
 def validation_generator(instances, batch_size):
@@ -27,6 +28,8 @@ def validation_generator(instances, batch_size):
 
 
 def train_bayes(x_train, x_val, y_train, y_val, save_loc, metric_loc):
+    sample_weights = compute_sample_weight(class_weight='balanced',
+                                           y=y_train)
     classes = np.unique(y_train)
     model = MultinomialNB()
     #with parallel_backend('threading', n_jobs=-1):
@@ -38,10 +41,10 @@ def train_bayes(x_train, x_val, y_train, y_val, save_loc, metric_loc):
         print(n)
         # random.shuffle(range_x)
         # print(range_x[:5])
-        for mini_batch_x, mini_batch_y in batch_generator(x_train, y_train, 1000):
+        for mini_batch_x, mini_batch_y, weights in batch_generator(x_train, y_train, 1000, sample_weights):
             # with parallel_backend('threading', n_jobs=-1):
             model.partial_fit(mini_batch_x, mini_batch_y,
-                              classes=classes)
+                              classes=classes, sample_weight=weights)
 
     #filename = f'models/{name_model}.sav'
     pickle.dump(model, open(save_loc, 'wb'))
