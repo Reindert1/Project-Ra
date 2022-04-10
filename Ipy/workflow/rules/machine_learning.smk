@@ -48,3 +48,16 @@ rule zero_r:
         notebook=config["results_dir"] + "logs/models/zero_r.log"
     script:
         "../scripts/zero_r.py"
+
+rule multinomial_nb:
+    input:
+        config["dataset_dir"] + "dataset/train.h5py"
+    output:
+        model=config["dataset_dir"] + "models/MultinomialNB.sav",
+        metrics=config["dataset_dir"] + "model_metrics/MultinomialNB.sav"
+    message:
+        "Training Multinomial Naive Bayes classifier"
+    log:
+        notebook=config["results_dir"] + "logs/models/multinomial_nb.log"
+    script:
+        "../scripts/multinomialnb.py"

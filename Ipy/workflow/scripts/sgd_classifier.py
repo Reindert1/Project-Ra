@@ -13,6 +13,7 @@ import sys
 from sklearn.linear_model import SGDClassifier
 from scipy.stats import uniform, loguniform
 from sklearn import metrics
+from sklearn.utils import compute_sample_weight, compute_class_weight
 from skopt.space import Real, Integer, Categorical
 from skopt.utils import use_named_args
 from skopt import gp_minimize
@@ -29,7 +30,7 @@ def validation_generator(instances, batch_size):
         yield instances[i:i + batch_size]
 
 
-def find_optimal(x_train, x_val, y_train, y_val, classes):
+def find_optimal(x_train, x_val, y_train, y_val, classes, class_weights):
     #model = SGDClassifier(loss='log')  # shuffle=True is useless here
     #model = SGDClassifier(tol=1e-3, penalty='elasticnet', random_state=0)
 
@@ -41,17 +42,23 @@ def find_optimal(x_train, x_val, y_train, y_val, classes):
              Categorical(['hinge', 'log', 'modified_huber', 'squared_hinge'], name='loss')
              ]
 
+    # sample_weights = compute_sample_weight(class_weight='balanced',
+    #                                        y=y_train)
+    # class_weights = compute_class_weight(class_weight='balanced',
+    #                                      y=y_train, classes=classes)
+    # class_weights = dict(zip(np.unique(classes), class_weights))
+
     @use_named_args(space)
     def objective(**params):
         #model = SGDClassifier(tol=1e-3, penalty='elasticnet', random_state=0)
-        model = SGDClassifier(random_state=0)
+        model = SGDClassifier(random_state=0, class_weight=class_weights)
         model.set_params(**params)
 
         n_iter = 1
         for n in range(n_iter):
             print(n)
 
-            for mini_batch_x, mini_batch_y in batch_generator(x_train, y_train, 50000):
+            for mini_batch_x, mini_batch_y in batch_generator(x_train, y_train, 10000):
                 #print(np.unique(y_train))
                 # with parallel_backend('threading', n_jobs=-1):
                 model.partial_fit(mini_batch_x, mini_batch_y,
@@ -85,8 +92,12 @@ def find_optimal(x_train, x_val, y_train, y_val, classes):
     return optimal_params
 
 
-def train_sgd(x_train, x_val, y_train, y_val, classes, optimal_params, save_loc, metric_loc):
-    model = SGDClassifier(random_state=0,
+def train_sgd(x_train, x_val, y_train, y_val, classes, optimal_params, save_loc, metric_loc, class_weights):
+    # sample_weights = compute_sample_weight(class_weight='balanced',
+    #                                        y=y_train)
+    # class_weights = compute_class_weight(class_weight='balanced',
+    #                                      y=y_train, classes=classes)
+    model = SGDClassifier(random_state=0, class_weight=class_weights,
                           alpha=optimal_params["alpha"], l1_ratio=optimal_params["l1_ratio"], loss=optimal_params["loss"])
 
     n_iter = 10
@@ -126,10 +137,14 @@ def main():
     x_val = f.get('x_test')
     y_val = f.get('y_test')
     classes = np.unique(y_train)
+
+    class_weights = compute_class_weight(class_weight='balanced',
+                                         y=y_train, classes=classes)
+    class_weights = dict(zip(np.unique(classes), class_weights))
     #print(x_val.shape)
     #print(classes)
-    optimal_params = find_optimal(x_train, x_val, y_train, y_val, classes)
-    train_sgd(x_train, x_val, y_train, y_val, classes, optimal_params, save_location, metric_loc)
+    optimal_params = find_optimal(x_train, x_val, y_train, y_val, classes, class_weights)
+    train_sgd(x_train, x_val, y_train, y_val, classes, optimal_params, save_location, metric_loc, class_weights)
 
     f.close()
 

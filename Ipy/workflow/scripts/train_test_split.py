@@ -127,10 +127,10 @@ def split_test2(memmap_file, h5py_file):
     f.create_dataset('y_test', data=y_test)
     f.close()
 
-    # np.save(f"{snakemake.config['datadir']}dataset/x_train.npy", x_train)
-    # np.save(f"{snakemake.config['datadir']}dataset/x_test.npy", x_test)
-    # np.save(f"{snakemake.config['datadir']}dataset/y_train.npy", y_train)
-    # np.save(f"{snakemake.config['datadir']}dataset/y_test.npy", y_test)
+    # np.save(f"{snakemake.config['dataset_dir']}dataset/x_train.npy", x_train)
+    # np.save(f"{snakemake.config['dataset_dir']}dataset/x_test.npy", x_test)
+    # np.save(f"{snakemake.config['dataset_dir']}dataset/y_train.npy", y_train)
+    # np.save(f"{snakemake.config['dataset_dir']}dataset/y_test.npy", y_test)
     return 0
 
 

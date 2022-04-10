@@ -10,8 +10,9 @@ dataset_dir: /Thema11/Ipy/results2/
 results_dir: /Thema11/Ipy/results2/
 
 segment:
+  r4: Tile_r4-c7_Acquisition Spec 3_452994970.tif
   r5: Tile_r4-c4_Acquisition Spec 3_452994970.tif
-  r6: Tile_r4-c4_Acquisition Spec 3_452994970.tif
+  r5_matched: Tile_r4-c4_Acquisition Spec 3_452994970_matched.tif
 
 gaussian_layers: 4
 window_size:
@@ -19,5 +20,5 @@ window_size:
 
 algorithms:
   - SGD
-  - GaussianNB
+  - MultinomialNB
   - ZeroR
