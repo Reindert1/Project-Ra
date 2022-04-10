@@ -1,3 +1,12 @@
+#!usr/bin/env python3
+
+"""
+Script to get neighboring pixel values
+"""
+
+__author__ = "Skippybal"
+__version__ = "0.1"
+
 import cv2 as cv
 import numpy as np
 import sys
@@ -33,5 +42,7 @@ def main():
 
 
 if __name__ == '__main__':
-    exitcode = main()
-    sys.exit(exitcode)
+    with open(snakemake.log[0], "w") as log_file:
+        sys.stderr = sys.stdout = log_file
+        exitcode = main()
+        sys.exit(exitcode)

@@ -6,6 +6,8 @@ rule create_output_notebook:
                        model_name=config["algorithms"])
     output:
         temp(config["results_dir"] + "notebook.done")
+    message:
+        "Building final notebook"
     log:
         notebook=config["results_dir"] + "notebooks/output_notebook.ipynb"
     notebook:

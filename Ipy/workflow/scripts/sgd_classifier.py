@@ -1,5 +1,13 @@
-import pickle
+#!usr/bin/env python3
 
+"""
+Script to run SGDClassifier on a given dataset making use of bayesian hyperparameter tuning
+"""
+
+__author__ = "Skippybal"
+__version__ = "0.1"
+
+import pickle
 import numpy as np
 import sys
 from sklearn.linear_model import SGDClassifier
@@ -39,7 +47,7 @@ def find_optimal(x_train, x_val, y_train, y_val, classes):
         model = SGDClassifier(random_state=0)
         model.set_params(**params)
 
-        n_iter = 5
+        n_iter = 1
         for n in range(n_iter):
             print(n)
 
@@ -77,7 +85,7 @@ def find_optimal(x_train, x_val, y_train, y_val, classes):
     return optimal_params
 
 
-def train_sgd(x_train, x_val, y_train, y_val, classes, optimal_params, save_loc):
+def train_sgd(x_train, x_val, y_train, y_val, classes, optimal_params, save_loc, metric_loc):
     model = SGDClassifier(random_state=0,
                           alpha=optimal_params["alpha"], l1_ratio=optimal_params["l1_ratio"], loss=optimal_params["loss"])
 
@@ -95,9 +103,13 @@ def train_sgd(x_train, x_val, y_train, y_val, classes, optimal_params, save_loc)
     y_pred = []
     for val_batch in validation_generator(x_val, 10000):
         y_pred.extend(model.predict(val_batch))
-    accurary = metrics.accuracy_score(y_val, y_pred)
 
-    print("Accuracy: ", accurary)
+    metric_dict = {"Model": "SGDClassifier"}
+    accuracy = metrics.accuracy_score(y_val, y_pred)
+    metric_dict["Accuracy"] = accuracy
+    pickle.dump(metric_dict, open(metric_loc, 'wb'))
+
+    print("Accuracy: ", accuracy)
 
     return 0
 
@@ -105,7 +117,8 @@ def train_sgd(x_train, x_val, y_train, y_val, classes, optimal_params, save_loc)
 def main():
     #model = SGDClassifier(tol=1e-3, penalty='elasticnet', random_state=0)
     hdf5_file = snakemake.input[0]
-    save_location = snakemake.output[0]
+    save_location = snakemake.output["model"]
+    metric_loc = snakemake.output["metrics"]
 
     f = h5py.File(hdf5_file, 'r')
     x_train = f.get('x_train')
@@ -116,7 +129,7 @@ def main():
     #print(x_val.shape)
     #print(classes)
     optimal_params = find_optimal(x_train, x_val, y_train, y_val, classes)
-    train_sgd(x_train, x_val, y_train, y_val, classes, optimal_params, save_location)
+    train_sgd(x_train, x_val, y_train, y_val, classes, optimal_params, save_location, metric_loc)
 
     f.close()
 
@@ -124,5 +137,7 @@ def main():
 
 
 if __name__ == '__main__':
-    exitcode = main()
-    sys.exit(exitcode)
+    with open(snakemake.log[0], "w") as log_file:
+        sys.stderr = sys.stdout = log_file
+        exitcode = main()
+        sys.exit(exitcode)

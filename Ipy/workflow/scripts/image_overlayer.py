@@ -36,6 +36,7 @@ def main():
     save_img(img, output, None, None)
 
     print(f"Finished! Saved image at: {output}")
+    return 0
 
 
 def change_alpha(image, background_value=(0, 0, 0)):
@@ -147,4 +148,6 @@ def argparser():
 
 
 if __name__ == '__main__':
-    sys.exit(main())
+    with open(snakemake.log[0], "w") as log_file:
+        sys.stderr = sys.stdout = log_file
+        sys.exit(main())

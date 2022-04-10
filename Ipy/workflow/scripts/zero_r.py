@@ -15,7 +15,7 @@ from sklearn import metrics
 from sklearn.dummy import DummyClassifier
 
 
-def train_dummy(x_train, x_val, y_train, y_val, save_loc):
+def train_dummy(x_train, x_val, y_train, y_val, save_loc, metric_loc):
     """
     Train DummyClassifier, also know as ZeroR, on given data
     :param x_train: features of the training data
@@ -25,6 +25,7 @@ def train_dummy(x_train, x_val, y_train, y_val, save_loc):
     :param save_loc: location to save classifier
     :return: 0
     """
+    metric_dict = {"Model": "ZeroR"}
     model = DummyClassifier(strategy="most_frequent", random_state=42)
     print(f"current: ZeroR")
     model.fit(x_train, y_train)
@@ -32,7 +33,10 @@ def train_dummy(x_train, x_val, y_train, y_val, save_loc):
     pickle.dump(model, open(save_loc, 'wb'))
 
     y_pred = model.predict(x_val)
-    print("Accuracy:", metrics.accuracy_score(y_val, y_pred))
+    accuracy = metrics.accuracy_score(y_val, y_pred)
+    metric_dict["Accuracy"] = accuracy
+    pickle.dump(metric_dict, open(metric_loc, 'wb'))
+    print("Accuracy:", accuracy)
 
     return 0
 
@@ -43,7 +47,8 @@ def main():
     """
 
     hdf5_file = snakemake.input[0]
-    save_location = snakemake.output[0]
+    save_location = snakemake.output["model"]
+    metric_loc = snakemake.output["metrics"]
 
     f = h5py.File(hdf5_file, 'r')
     x_train = f.get('x_train')
@@ -51,7 +56,7 @@ def main():
     x_val = f.get('x_test')
     y_val = f.get('y_test')
 
-    train_dummy(x_train, x_val, y_train, y_val, save_location)
+    train_dummy(x_train, x_val, y_train, y_val, save_location, metric_loc)
 
     f.close()
 
@@ -59,5 +64,7 @@ def main():
 
 
 if __name__ == '__main__':
-    exitcode = main()
-    sys.exit(exitcode)
+    with open(snakemake.log[0], "w") as log_file:
+        sys.stderr = sys.stdout = log_file
+        exitcode = main()
+        sys.exit(exitcode)

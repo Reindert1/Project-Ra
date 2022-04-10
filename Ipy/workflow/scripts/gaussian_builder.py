@@ -1,5 +1,15 @@
+#!usr/bin/env python3
+
+"""
+Script to build gaussian pyramids dataset for a given image
+"""
+
+__author__ = "Skippybal"
+__version__ = "0.1"
+
 import cv2 as cv
 import numpy as np
+import sys
 
 
 def build_gaussian(image, save_location, layers=1):
@@ -19,5 +29,15 @@ def build_gaussian(image, save_location, layers=1):
     np.save(save_location, gaus_np)
     return 0
 
-build_gaussian(snakemake.input[0], snakemake.output[0], snakemake.params["gaussian_layers"])
+
+def main():
+    build_gaussian(snakemake.input[0], snakemake.output[0], snakemake.params["gaussian_layers"])
+    return 0
+
+
+if __name__ == '__main__':
+    with open(snakemake.log[0], "w") as log_file:
+        sys.stderr = sys.stdout = log_file
+        exitcode = main()
+        sys.exit(exitcode)
 

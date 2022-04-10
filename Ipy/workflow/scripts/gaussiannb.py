@@ -1,3 +1,12 @@
+#!usr/bin/env python3
+
+"""
+Script to run GaussianNB on given dataset
+"""
+
+__author__ = "Skippybal"
+__version__ = "0.1"
+
 import math
 import pickle
 import random
@@ -15,25 +24,30 @@ from sklearn import metrics
 from sklearn.naive_bayes import GaussianNB
 
 
-
-def train_bayes(x_train, x_val, y_train, y_val, save_loc):
+def train_bayes(x_train, x_val, y_train, y_val, save_loc, metric_loc):
     model = GaussianNB()
-    with parallel_backend('threading', n_jobs=-1):
-        print(f"current: GaussianNB")
-        model.fit(x_train, y_train)
+    #with parallel_backend('threading', n_jobs=-1):
+    metric_dict = {"Model": "GaussianNB"}
+    print(f"current: GaussianNB")
+    model.fit(x_train, y_train)
 
-        #filename = f'models/{name_model}.sav'
-        pickle.dump(model, open(save_loc, 'wb'))
+    #filename = f'models/{name_model}.sav'
+    pickle.dump(model, open(save_loc, 'wb'))
 
-        y_pred = model.predict(x_val)
-        print("Accuracy:", metrics.accuracy_score(y_val, y_pred))
+    y_pred = model.predict(x_val)
+    accuracy = metrics.accuracy_score(y_val, y_pred)
+    metric_dict["Accuracy"] = accuracy
+    pickle.dump(metric_dict, open(metric_loc, 'wb'))
+    print("Accuracy:", metrics.accuracy_score(y_val, y_pred))
 
     return 0
+
 
 def main():
     #model = SGDClassifier(tol=1e-3, penalty='elasticnet', random_state=0)
     hdf5_file = snakemake.input[0]
-    save_location = snakemake.output[0]
+    save_location = snakemake.output["model"]
+    metric_loc = snakemake.output["metrics"]
 
     f = h5py.File(hdf5_file, 'r')
     x_train = f.get('x_train')
@@ -42,7 +56,7 @@ def main():
     y_val = f.get('y_test')
     #print(x_val.shape)
     #print(classes)
-    train_bayes(x_train, x_val, y_train, y_val, save_location)
+    train_bayes(x_train, x_val, y_train, y_val, save_location, metric_loc)
 
     f.close()
 
@@ -50,5 +64,7 @@ def main():
 
 
 if __name__ == '__main__':
-    exitcode = main()
-    sys.exit(exitcode)
+    with open(snakemake.log[0], "w") as log_file:
+        sys.stderr = sys.stdout = log_file
+        exitcode = main()
+        sys.exit(exitcode)

@@ -8,6 +8,7 @@ Non-coloured data is labeled as 0 and coloured data is labeled as 1.
 __author__ = "devalk96"
 __version__ = "0.2"
 
+import sys
 import os
 import numpy as np
 import argparse
@@ -56,7 +57,11 @@ def main():
     input_path, output_path = setup_paths(snakemake.input[0], snakemake.output[0])
     result_array = process_image(input_path)
     save_image(result_array, output_path)
+    return 0
 
 
 if __name__ == '__main__':
-    main()
+    with open(snakemake.log[0], "w") as log_file:
+        sys.stderr = sys.stdout = log_file
+        exitcode = main()
+        sys.exit(exitcode)

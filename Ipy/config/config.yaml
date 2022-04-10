@@ -6,8 +6,8 @@ classifiers:
 
 train_data: Tile_r4-c7_Acquisition Spec 3_452994970.tif
 
-dataset_dir: /Thema11/Ipy/results/
-results_dir: /Thema11/Ipy/results/
+dataset_dir: /Thema11/Ipy/results2/
+results_dir: /Thema11/Ipy/results2/
 
 segment:
   r5: Tile_r4-c4_Acquisition Spec 3_452994970.tif
