@@ -8,7 +8,9 @@ rule train_test_split:
     message:
         "Splitting training data into test and train dataset"
     log:
-        notebook=config["results_dir"] + "logs/train_test_split/train_test_split.log"
+        config["results_dir"] + "logs/train_test_split/train_test_split.log"
+    benchmark:
+        config["results_dir"] + "benchmarks/train_test_split/train_test_split.benchmark.txt"
     script:
         "../scripts/machine_learning/train_test_split.py"
 
@@ -23,7 +25,9 @@ rule sgd_classifier:
     message:
         "Training SGD classifier"
     log:
-        notebook=config["results_dir"] + "logs/models/sgd_classifier.log"
+        config["results_dir"] + "logs/models/sgd_classifier.log"
+    benchmark:
+        config["results_dir"] + "benchmarks/models/sgd_classifier.benchmark.txt"
     script:
         "../scripts/machine_learning/sgd_classifier.py"
 
@@ -38,7 +42,9 @@ rule gaussian_nb:
     message:
         "Training Gaussian Naive Bayes classifier"
     log:
-        notebook=config["results_dir"] + "logs/models/gaussian_nb.log"
+        config["results_dir"] + "logs/models/gaussian_nb.log"
+    benchmark:
+        config["results_dir"] + "benchmarks/models/gaussian_nb.benchmark.txt"
     script:
         "../scripts/machine_learning/gaussiannb.py"
 
@@ -53,7 +59,9 @@ rule zero_r:
     message:
         "Training ZeroR classifier"
     log:
-        notebook=config["results_dir"] + "logs/models/zero_r.log"
+        config["results_dir"] + "logs/models/zero_r.log"
+    benchmark:
+        config["results_dir"] + "benchmarks/models/zero_r.benchmark.txt"
     script:
         "../scripts/machine_learning/zero_r.py"
 
@@ -68,6 +76,8 @@ rule multinomial_nb:
     message:
         "Training Multinomial Naive Bayes classifier"
     log:
-        notebook=config["results_dir"] + "logs/models/multinomial_nb.log"
+        config["results_dir"] + "logs/models/multinomial_nb.log"
+    benchmark:
+        config["results_dir"] + "benchmarks/models/multinomial_nb.benchmark.txt"
     script:
         "../scripts/machine_learning/multinomialnb.py"

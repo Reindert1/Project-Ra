@@ -2,7 +2,6 @@ rule combine_features_data:
     input:
         windows = config["dataset_dir"] + "data_subset/{image}_windows.npy",
         gaussian = config["dataset_dir"] + "data_subset/{image}_gaussian.npy"
-        #config["train_data"]
     output:
         config["dataset_dir"] + "dataset/total_features_{image}.npy"
     params:
@@ -12,7 +11,9 @@ rule combine_features_data:
     message:
         "Combining feature datasets for {wildcards.image}"
     log:
-        notebook=config["results_dir"] + "logs/combine_features_data/{image}.log"
+        config["results_dir"] + "logs/combine_features_data/{image}.log"
+    benchmark:
+        config["results_dir"] + "benchmarks/combine_features_data/{image}.benchmark.txt"
     script:
         "../scripts/dataset_building/array_builder.py"
 
@@ -29,6 +30,8 @@ rule add_classifier:
     message:
         "Adding classifier to training features dataset"
     log:
-        notebook=config["results_dir"] + "logs/add_classifier/add_classifier.log"
+        config["results_dir"] + "logs/add_classifier/add_classifier.log"
+    benchmark:
+        config["results_dir"] + "benchmarks/add_classifier/add_classifier.benchmark.txt"
     script:
         "../scripts/dataset_building/array_builder.py"

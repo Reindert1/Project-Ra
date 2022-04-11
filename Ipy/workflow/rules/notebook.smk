@@ -12,5 +12,7 @@ rule create_output_notebook:
         "Building final notebook"
     log:
         notebook=config["results_dir"] + "notebooks/output_notebook.ipynb"
+    benchmark:
+        config["results_dir"] + "benchmarks/notebooks/output_notebook.benchmark.txt"
     notebook:
         "../notebooks/output_notebook.py.ipynb"
