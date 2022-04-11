@@ -12,12 +12,14 @@ rule build_gaussian_pyramid:
         config["dataset_dir"] + "data_subset/{image}_gaussian.npy"
     params:
         gaussian_layers=config["gaussian_layers"]
+    threads:
+        1
     message:
         "Builing gaussian pyramids dataset for {wildcards.image}"
     log:
         notebook=config["results_dir"] + "logs/build_gaussian_pyramid/{image}.log"
     script:
-        "../scripts/gaussian_builder.py"
+        "../scripts/dataset_building/gaussian_builder.py"
 
 rule roll_windows:
     input:
@@ -28,9 +30,11 @@ rule roll_windows:
         config["dataset_dir"] + "data_subset/{image}_windows.npy"
     params:
         window_size=config["window_size"]
+    threads:
+        1
     message:
         "Building neigboring pixel dataset for {wildcards.image}"
     log:
         notebook=config["results_dir"] + "logs/roll_windows/{image}.log"
     script:
-        "../scripts/window_roller.py"
+        "../scripts/dataset_building/window_roller.py"

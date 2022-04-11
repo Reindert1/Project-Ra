@@ -9,12 +9,14 @@ rule classifier_to_tif:
         config["results_dir"] + "images/classified/{classifier}_{model_name}.tif"
     params:
         original_image_location=get_original_image_location
+    threads:
+        1
     message:
         "Building segmented tif image from trained {wildcards.model_name} classifier for {wildcards.classifier}"
     log:
         notebook=config["results_dir"] + "logs/classifier_to_tif/{classifier}_{model_name}.log"
     script:
-        "../scripts/classifier_to_tiff.py"
+        "../scripts/image_building/classifier_to_tiff.py"
 
 rule image_overlayer:
     input:
@@ -22,9 +24,11 @@ rule image_overlayer:
         overlay=config["results_dir"] + "images/classified/{classifier}_{model_name}.tif",
     output:
         config["results_dir"] + "images/overlayed/{classifier}_{model_name}_overlay.tif"
+    threads:
+        1
     message:
         "Overlaying segmented {wildcards.classifier} from {wildcards.model_name} model with the original image"
     log:
         notebook=config["results_dir"] + "logs/image_overlayer/{classifier}_{model_name}.log"
     script:
-        "../scripts/image_overlayer.py"
+        "../scripts/image_building/image_overlayer.py"

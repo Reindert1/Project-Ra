@@ -7,12 +7,14 @@ rule combine_features_data:
         config["dataset_dir"] + "dataset/total_features_{image}.npy"
     params:
         temp_file=config["dataset_dir"] + "dataset/temp_total_features_{image}.npy"
+    threads:
+        1
     message:
         "Combining feature datasets for {wildcards.image}"
     log:
         notebook=config["results_dir"] + "logs/combine_features_data/{image}.log"
     script:
-        "../scripts/array_builder.py"
+        "../scripts/dataset_building/array_builder.py"
 
 rule add_classifier:
     input:
@@ -22,9 +24,11 @@ rule add_classifier:
         config["dataset_dir"] + "dataset/full_classification.npy"
     params:
         temp_file= config["dataset_dir"] + "classifiers/temp_full_classification.npy"
+    threads:
+        1
     message:
         "Adding classifier to training features dataset"
     log:
         notebook=config["results_dir"] + "logs/add_classifier/add_classifier.log"
     script:
-        "../scripts/array_builder.py"
+        "../scripts/dataset_building/array_builder.py"
