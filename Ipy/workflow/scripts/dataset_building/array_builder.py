@@ -45,6 +45,10 @@ def appender(data_location, outfile, tempfile):
         for col in range(data.shape[1]):
             merged[:, data_index] = data[:, col]
             data_index += 1
+        del data
+        gc.collect()
+        print(f"removing: {data_file}")
+        os.remove(data_file)
 
     disk_array = open_memmap(outfile, mode='w+', dtype=merged.dtype, shape=merged.shape)
     disk_array[:] = merged[:]
