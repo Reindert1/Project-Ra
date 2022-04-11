@@ -9,3 +9,4 @@ scikit_learn==1.0.2
 scikit_optimize==0.9.0
 scipy==1.8.0
 snakemake==7.3.8
+nbformat==5.0.8
