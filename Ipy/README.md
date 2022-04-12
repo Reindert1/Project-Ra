@@ -19,16 +19,15 @@ segmentation purposes.
 - [Acknowledgements](#acknowledgements)
 
 ## Project description
-This project is a web application that seeks to give insight into the energy consumption
-of the machines in the BIN facility. This is done by creating an energy dashboard
-that displays the energy consumption over multiple time periods of all the machines on the network.
-The dashboard aims to constantly give the most up-to-date information by constantly updating the data in 
-the background without having to refresh the webpage. The historical data is saved in a database that can 
-be accessed by the backend of the application. Updating the database is done using a separate script.
+This project is a machine learning pipeline that aims to automate image segmentation. This is done
+by using a greyscale image as training data, and combining this with annotated images. Features like 
+neighboring pixel values and gaussian pyramid layers are extracted from the training image. There
+features are then combined with the classifier to build a dataset. This dataset is then given to 
+multiple machine learning algorithms, that make use of automated hyperparameter tuning, to try an classify
+the pixels. This should, in theory, create a model that is able to recognize pixels as belonging
+to a specific class. This means these model should be able to segment images based on the original
+classifier input they where trained with.
 
-To get the energy usage of the machines a simple linear model is used. This model uses the data from Prometheus,
-which can be accessed through the Grafana API. A more complex neural network implementation was tested but failed 
-to outperform the simple linear model. This was most likely due to the quality of the dataset that was built and used.
 
 ## Installation
 To install the pipeline you must clone this repository. You can do this using
@@ -116,7 +115,7 @@ the config file
 The pipeline when using all available features:
 ![full_pipeline](images/full_use_pipeline.png)
 
-The pipeline when using select group of features:
+The pipeline when using a select group of features:
 ![partial_pipeline](images/partial_use_pipeline.png)
 
 
