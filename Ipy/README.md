@@ -33,7 +33,9 @@ to outperform the simple linear model. This was most likely due to the quality o
 ## Installation
 To install the pipeline you must clone this repository. You can do this using
 the following command:
-``git clone https://github.com/devalk96/Project-Ra.git``
+```
+git clone https://github.com/devalk96/Project-Ra.git
+```
 
 To install the required packages you can use:
 ``pip install -r requirements.txt``  
@@ -123,7 +125,7 @@ The pipeline when using select group of features:
 of an image.  
 ``roll_windows``: Builds a dataset of neighbouring pixel values for a given image.  
 ``scale_colors``: Convert given classifier image from rgba to 0 and 1 values.  
-``combine_classifiers``: Convert all given classifier images into single classifier list.
+``combine_classifiers``: Convert all given classifier images into single classifier list.  
 ``combine_features_data``: Combine data subsets into single dataset.  
 ``add_classifier``: Add classifier to training data.  
 ``train_test_split``: Split training data into train and test data.  
