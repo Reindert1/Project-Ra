@@ -5,7 +5,7 @@ rule create_output_notebook:
         metrics=expand(config["dataset_dir"] + "model_metrics/{model_name}.sav",
                        model_name=config["algorithms"])
     output:
-        temp(config["results_dir"] + "notebook.done")
+        temp(touch(config["results_dir"] + "notebook.done"))
     threads:
         1
     message:
