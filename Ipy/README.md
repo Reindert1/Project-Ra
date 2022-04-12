@@ -66,7 +66,7 @@ to the building of notebooks in this package. This is something jupyter notebook
 This means the pipeline will not work correctly on any version after 5.0.8.
 
 ## Running the pipeline
-To run the pipeline after installing the requered packages, you can run the following command from the 
+To run the pipeline after installing the required packages, you can run the following command from the 
 main Ipy directory (current directory):  
 ```
 snakemake --cores {cores}
