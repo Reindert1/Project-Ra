@@ -1,13 +1,13 @@
 datadir: /Thema11/Ra/data/
 
-classifiers:
-  mitchodira: r4-c7_mithochondria.tif
-  nucleus: r4-c7_nucleus.tif
+dataset_dir: /Thema11/Ipy/results_refactor_all/
+results_dir: /Thema11/Ipy/results_refactor_all/
 
 train_data: Tile_r4-c7_Acquisition Spec 3_452994970.tif
 
-dataset_dir: /Thema11/Ipy/results_refactor_all/
-results_dir: /Thema11/Ipy/results_refactor_all/
+classifiers:
+  mitchodira: r4-c7_mithochondria.tif
+  nucleus: r4-c7_nucleus.tif
 
 segment:
   r4: Tile_r4-c7_Acquisition Spec 3_452994970.tif
