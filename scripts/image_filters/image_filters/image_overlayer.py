@@ -29,7 +29,7 @@ def main():
 
     save_img(img, args.output, width, height)
 
-    print(f"Finished! Saved image at: {args.output}")
+    print(f"[INFO] Finished! Saved image at: {args.output}")
 
 
 def change_alpha(image, background_value=(0, 0, 0)):
@@ -68,7 +68,7 @@ def label_to_color(image: Image.Image, colornum: int) -> Image.Image:
 
     r1, g1, b1 = (1, 1, 1)
     r2, g2, b2, a2 = colors[colornum]
-    print(f"\t\t--> Used color is: rgba{colors[colornum]}")
+    print(f"[INFO]\t\t--> Used color is: rgba{colors[colornum]}")
 
     red, green, blue, alpha = data[:, :, 0], data[:, :, 1], data[:, :, 2], data[:, :, 3]
     mask = (red == r1) & (green == g1) & (blue == b1)
@@ -79,15 +79,15 @@ def label_to_color(image: Image.Image, colornum: int) -> Image.Image:
 
 def labeled_file_check(image: Image.Image):
     if image.mode != "L":
-        print("\t\t--> Image doesn't open in L mode. File is (probably) unlabeled")
+        print("[INFO]\t\t--> Image doesn't open in L mode. File is (probably) unlabeled")
         return 0
 
     colors = image.getcolors()
     if colors[0][1] == 0 and colors[1][1] == 1 and len(colors) == 2:
-        print("\t\t--> Image is labeled (contains only two colors)")
+        print("[INFO]\t\t--> Image is labeled (contains only two colors)")
         return 1
     else:
-        print("\t\t--> Image is not labeled (contains more then two colors): ", image.getcolors())
+        print("[INFO]\t\t--> Image is not labeled (contains more then two colors): ", image.getcolors())
         return 0
 
 
@@ -95,7 +95,7 @@ def construct_img(background, overlay) -> Image.Image:
     alpha_col = (0, 0, 0)
     background = Image.open(background).convert("RGBA")
     for e, image in enumerate(overlay):
-        print(f"Overlaying image {e + 1}/{len(overlay)}:\t{image}")
+        print(f"[INFO] Overlaying image {e + 1}/{len(overlay)}:\t{image}")
 
         if labeled_file_check(Image.open(image)):
             foreground = label_to_color(Image.open(image).convert("RGBA"), e)
@@ -114,11 +114,11 @@ def _validate_files(files):
 
 
 def save_img(img: Image.Image, output_path: str, width=None, height=None):
-    print(f"Saving final image...")
+    print(f"[INFO] Saving final image...")
     img = img.convert("P")
 
     if width and height:
-        print(f"Resizing output image to : {width}px, {height}px")
+        print(f"[INFO] Resizing output image to : {width}px, {height}px")
         img = img.resize((int(width), int(height)))
     img.save(output_path)
 
