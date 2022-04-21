@@ -1,12 +1,12 @@
 datadir: /Thema11/Ra/data/
 
-dataset_dir: /Thema11/Ipy/results_refactor_all/
-results_dir: /Thema11/Ipy/results_refactor_all/
+dataset_dir: /Thema11/Ipy/results_nucleus_manual_sgd/
+results_dir: /Thema11/Ipy/results_nucleus_manual_sgd/
 
 train_data: Tile_r4-c7_Acquisition Spec 3_452994970.tif
 
 classifiers:
-  mitchodira: r4-c7_mithochondria.tif
+#  mitchodira: r4-c7_mithochondria.tif
   nucleus: r4-c7_nucleus.tif
 
 segment:
@@ -20,5 +20,5 @@ window_size:
 
 algorithms:
   - SGD
-  - MultinomialNB
-  - ZeroR
+#  - MultinomialNB
+#  - ZeroR

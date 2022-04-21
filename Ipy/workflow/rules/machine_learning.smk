@@ -31,6 +31,23 @@ rule sgd_classifier:
     script:
         "../scripts/machine_learning/sgd_classifier.py"
 
+rule sgd_classifier_manual:
+    input:
+        config["dataset_dir"] + "dataset/train.h5py"
+    output:
+        model=config["dataset_dir"] + "models/SGD_manual.sav",
+        metrics=config["dataset_dir"] + "model_metrics/SGD_manual.sav"
+    threads:
+        1
+    message:
+        "Training SGD classifier"
+    log:
+        config["results_dir"] + "logs/models/sgd_classifier.log"
+    benchmark:
+        config["results_dir"] + "benchmarks/models/sgd_classifier.benchmark.txt"
+    script:
+        "../scripts/machine_learning/sgd_classifier_manual.py"
+
 rule gaussian_nb:
     input:
         config["dataset_dir"] + "dataset/train.h5py"
