@@ -5,12 +5,15 @@ This package contains various scripts used in the pipeline for image filtering.
 
 - [img_to_label.py](#image_to_label)
     * [About](#About)
-    * [Guide](#Packages)
+    * [Guide](#Guide)
   
 - [image_overlayer.py](#image_overlayer.py)
     * [About](#Prerequisites)
     * [Guide](#Packages)
 
+- [contrast_matching.py](#contrast_matching.py)
+    * [About](#About)
+    * [Guide](#Guide)
 
 - [Prerequisites](###Prerequisites)
 - [Packages](###Packages)
@@ -57,15 +60,28 @@ Images are used which are already colored. Example black and red image.
 ```python3 image_overlayer.py -b data/background.tif --overlay data/overlay1.tif data/overlay2.tif -O data/output.tif```
 
 
+## contrast_matching.py  
+### About 
+This tool matches the contrast of an image to a reference image.
+
+### Guide  
+Expects commandline input.  
+Example: ```python3 constrast_matching.py -s {source} -r {reference} -o {output}```
+
 ## Prerequisites
 * Python 
   * Version 3.6
 
 ## Packages
-| Name   | Version |   
-|--------|---------|
-| Pillow | 8.4.0   |
-| numpy  | 1.20.3  |
+| Name          | Version  |   
+|---------------|----------|
+| Pillow        | 9.1.0    |
+| numpy         | 1.22.3   |
+| matplotlib    | 3.5.1    |
+| opencv_python | 4.5.5.64 |
+| scikit_image  | 0.19.2   |
+| skimage       | 0.0      |
+
 
 
 ## Contact
