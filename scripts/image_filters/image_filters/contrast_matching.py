@@ -23,14 +23,12 @@ def process(source_path, reference_path, output_path):
     source = cv2.imread(source_path)
     reference = cv2.imread(reference_path)
 
-    # check for performing multichannel histogram matching
-
     print("[INFO] Performing matching")
     multi = True if source.shape[-1] > 1 else False
     matched = exposure.match_histograms(source, reference, channel_axis=multi)
     cv2.imwrite(output_path, matched)
 
-    # Create histograms
+    # Create histograms and save image
     create_histogram(source, reference, matched, "histogram.jpg")
 
     print("[INFO] Done")
