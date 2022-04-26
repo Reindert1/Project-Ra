@@ -98,3 +98,20 @@ rule multinomial_nb:
         config["results_dir"] + "benchmarks/models/multinomial_nb.benchmark.txt"
     script:
         "../scripts/machine_learning/multinomialnb.py"
+
+rule decision_tree:
+    input:
+        config["dataset_dir"] + "dataset/train.h5py"
+    output:
+        model=config["dataset_dir"] + "models/DecisionTree.sav",
+        metrics=config["dataset_dir"] + "model_metrics/DecisionTree.sav"
+    threads:
+        1
+    message:
+        "Training Decision Tree classifier"
+    log:
+        config["results_dir"] + "logs/models/DecisionTree.log"
+    benchmark:
+        config["results_dir"] + "benchmarks/models/DecisionTree.benchmark.txt"
+    script:
+        "../scripts/machine_learning/decisiontree.py"
