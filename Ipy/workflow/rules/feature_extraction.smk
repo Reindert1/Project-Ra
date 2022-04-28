@@ -36,3 +36,19 @@ rule roll_windows:
         config["results_dir"] + "benchmarks/roll_windows/{image}.benchmark.txt"
     script:
         "../scripts/dataset_building/window_roller.py"
+
+rule detecting_edges:
+    input:
+        image_location = get_input_image_location
+    output:
+        config["dataset_dir"] + "data_subset/{image}_edges.npy"
+    threads:
+        1
+    message:
+        "Detecting edges for {wildcards.image}"
+    log:
+        config["results_dir"] + "logs/edge_detect/{image}.log"
+    benchmark:
+        config["results_dir"] + "benchmarks/edge_detect/{image}.benchmark.txt"
+    script:
+        "../scripts/dataset_building/edgedetection.py"

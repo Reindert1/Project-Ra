@@ -97,9 +97,9 @@ def train_tree(x_train, x_val, y_train, y_val, save_loc, metric_loc):
     # sample_weights = compute_sample_weight(class_weight='balanced',
     #                                        y=y_train)
     # classes = np.unique(y_train)
-    model = DecisionTreeClassifier(random_state=0, splitter="best", max_depth=10, min_samples_split=10)
-    metric_dict = {"Model": "GaussianNB"}
-    print(f"current: GaussianNB")
+    model = DecisionTreeClassifier(random_state=0, splitter="best") #, max_depth=10, min_samples_split=10)
+    metric_dict = {"Model": "DecisionTreeClassifier"}
+    print(f"current: DecisionTreeClassifier")
     model.fit(x_train, y_train)
 
     pickle.dump(model, open(save_loc, 'wb'))
@@ -126,7 +126,7 @@ def main():
     y_train = f.get('y_train')
     x_val = f.get('x_test')
     y_val = f.get('y_test')
-    classes = np.unique(y_train)
+    # classes = np.unique(y_train)
 
     # class_weights = compute_class_weight(class_weight='balanced',
     #                                      y=y_train, classes=classes)

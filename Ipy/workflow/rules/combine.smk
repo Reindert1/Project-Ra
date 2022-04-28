@@ -1,7 +1,8 @@
 rule combine_features_data:
     input:
         windows = config["dataset_dir"] + "data_subset/{image}_windows.npy",
-        gaussian = config["dataset_dir"] + "data_subset/{image}_gaussian.npy"
+        gaussian = config["dataset_dir"] + "data_subset/{image}_gaussian.npy",
+        edges = config["dataset_dir"] + "data_subset/{image}_edges.npy"
     output:
         config["dataset_dir"] + "dataset/total_features_{image}.npy"
     params:

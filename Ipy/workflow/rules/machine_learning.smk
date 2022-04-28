@@ -35,16 +35,16 @@ rule sgd_classifier_manual:
     input:
         config["dataset_dir"] + "dataset/train.h5py"
     output:
-        model=config["dataset_dir"] + "models/SGD_manual.sav",
-        metrics=config["dataset_dir"] + "model_metrics/SGD_manual.sav"
+        model=config["dataset_dir"] + "models/SGDmanual.sav",
+        metrics=config["dataset_dir"] + "model_metrics/SGDmanual.sav"
     threads:
         1
     message:
         "Training SGD classifier"
     log:
-        config["results_dir"] + "logs/models/sgd_classifier.log"
+        config["results_dir"] + "logs/models/sgd_manual_classifier.log"
     benchmark:
-        config["results_dir"] + "benchmarks/models/sgd_classifier.benchmark.txt"
+        config["results_dir"] + "benchmarks/models/sgd_manual_classifier.benchmark.txt"
     script:
         "../scripts/machine_learning/sgd_classifier_manual.py"
 
