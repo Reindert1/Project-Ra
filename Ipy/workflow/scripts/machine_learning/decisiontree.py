@@ -97,7 +97,8 @@ def train_tree(x_train, x_val, y_train, y_val, save_loc, metric_loc):
     # sample_weights = compute_sample_weight(class_weight='balanced',
     #                                        y=y_train)
     # classes = np.unique(y_train)
-    model = DecisionTreeClassifier(random_state=0, splitter="best") #, max_depth=10, min_samples_split=10)
+    model = DecisionTreeClassifier(random_state=0, splitter="best", max_depth=50, min_samples_split=10,
+                                   min_samples_leaf=2) #, max_depth=10, min_samples_split=10)
     metric_dict = {"Model": "DecisionTreeClassifier"}
     print(f"current: DecisionTreeClassifier")
     model.fit(x_train, y_train)
@@ -108,7 +109,19 @@ def train_tree(x_train, x_val, y_train, y_val, save_loc, metric_loc):
     for val_batch in validation_generator(x_val, 50000):
         y_pred.extend(model.predict(val_batch))
     accuracy = metrics.accuracy_score(y_val, y_pred)
+    #metric_dict["Accuracy"] = accuracy
+
+    confus_matrix = metrics.confusion_matrix(y_val, y_pred)
+    roc = metrics.roc_curve(y_val, y_pred)
+    roc_auc_curve = metrics.roc_auc_score(y_val, y_pred)
+    balanced_accuracy_score = metrics.balanced_accuracy_score(y_val, y_pred)
+
     metric_dict["Accuracy"] = accuracy
+    metric_dict["confus_matrix"] = confus_matrix
+    metric_dict["roc"] = roc
+    metric_dict["roc_auc_curve"] = roc_auc_curve
+    metric_dict["balanced_accuracy_score"] = balanced_accuracy_score
+
     pickle.dump(metric_dict, open(metric_loc, 'wb'))
     print("Accuracy:", metrics.accuracy_score(y_val, y_pred))
 

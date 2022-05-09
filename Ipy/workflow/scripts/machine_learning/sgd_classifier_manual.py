@@ -37,7 +37,7 @@ def train_sgd(x_train, x_val, y_train, y_val, classes, optimal_params, save_loc,
     for n in range(n_iter):
         print(n)
 
-        for mini_batch_x, mini_batch_y in batch_generator(x_train, y_train, 10000):
+        for mini_batch_x, mini_batch_y in batch_generator(x_train, y_train, 1028): #10000):
             model.partial_fit(mini_batch_x, mini_batch_y,
                               classes=classes)
 
@@ -49,7 +49,18 @@ def train_sgd(x_train, x_val, y_train, y_val, classes, optimal_params, save_loc,
 
     metric_dict = {"Model": "SGDClassifier"}
     accuracy = metrics.accuracy_score(y_val, y_pred)
+    #metric_dict["Accuracy"] = accuracy
+    confus_matrix = metrics.confusion_matrix(y_val, y_pred)
+    roc = metrics.roc_curve(y_val, y_pred)
+    roc_auc_curve = metrics.roc_auc_score(y_val, y_pred)
+    balanced_accuracy_score = metrics.balanced_accuracy_score(y_val, y_pred)
+
     metric_dict["Accuracy"] = accuracy
+    metric_dict["confus_matrix"] = confus_matrix
+    metric_dict["roc"] = roc
+    metric_dict["roc_auc_curve"] = roc_auc_curve
+    metric_dict["balanced_accuracy_score"] = balanced_accuracy_score
+
     pickle.dump(metric_dict, open(metric_loc, 'wb'))
 
     print("Accuracy: ", accuracy)

@@ -58,7 +58,7 @@ def find_optimal(x_train, x_val, y_train, y_val, classes, class_weights):
         for n in range(n_iter):
             print(n)
 
-            for mini_batch_x, mini_batch_y in batch_generator(x_train, y_train, 10000):
+            for mini_batch_x, mini_batch_y in batch_generator(x_train, y_train, 1028): #10000):
                 #print(np.unique(y_train))
                 # with parallel_backend('threading', n_jobs=-1):
                 model.partial_fit(mini_batch_x, mini_batch_y,
@@ -69,13 +69,18 @@ def find_optimal(x_train, x_val, y_train, y_val, classes, class_weights):
             y_pred.extend(model.predict(val_batch))
         accurary = metrics.accuracy_score(y_val, y_pred)
         loss = 1 - accurary
+        confus_matrix = metrics.confusion_matrix(y_val, y_pred)
+        roc = metrics.roc_curve(y_val, y_pred)
+        roc_auc_curve = metrics.roc_auc_score(y_val, y_pred)
+        balanced_accuracy_score = metrics.balanced_accuracy_score(y_val, y_pred)
+
         print("Accuracy: ", accurary)
         unique = np.unique(y_pred)
         if len(unique) == 1:
             print("Accuracy set to 0, so loss == 1")
             return 1
 
-        return loss
+        return 1 - balanced_accuracy_score #loss
 
 
     # filename = f'/homes/kanotebomer/Documents/Thema11/Project-Ra/scripts/machine_learning/models/SGD_mit.sav'
@@ -104,7 +109,7 @@ def train_sgd(x_train, x_val, y_train, y_val, classes, optimal_params, save_loc,
     for n in range(n_iter):
         print(n)
 
-        for mini_batch_x, mini_batch_y in batch_generator(x_train, y_train, 10000):
+        for mini_batch_x, mini_batch_y in batch_generator(x_train, y_train, 1028):#10000):
             # with parallel_backend('threading', n_jobs=-1):
             model.partial_fit(mini_batch_x, mini_batch_y,
                               classes=classes)
@@ -117,7 +122,17 @@ def train_sgd(x_train, x_val, y_train, y_val, classes, optimal_params, save_loc,
 
     metric_dict = {"Model": "SGDClassifier"}
     accuracy = metrics.accuracy_score(y_val, y_pred)
+    confus_matrix = metrics.confusion_matrix(y_val, y_pred)
+    roc = metrics.roc_curve(y_val, y_pred)
+    roc_auc_curve = metrics.roc_auc_score(y_val, y_pred)
+    balanced_accuracy_score = metrics.balanced_accuracy_score(y_val, y_pred)
+
     metric_dict["Accuracy"] = accuracy
+    metric_dict["confus_matrix"] = confus_matrix
+    metric_dict["roc"] = roc
+    metric_dict["roc_auc_curve"] = roc_auc_curve
+    metric_dict["balanced_accuracy_score"] = balanced_accuracy_score
+
     pickle.dump(metric_dict, open(metric_loc, 'wb'))
 
     print("Accuracy: ", accuracy)

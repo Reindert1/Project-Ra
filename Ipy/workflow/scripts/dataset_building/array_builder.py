@@ -65,7 +65,7 @@ def main():
 
 
 if __name__ == '__main__':
-    with open(snakemake.log[0], "w") as log_file:
-        sys.stderr = sys.stdout = log_file
+    #with open(snakemake.log[0], "w") as log_file:
+    #    sys.stderr = sys.stdout = log_file
         exitcode = main()
         sys.exit(exitcode)

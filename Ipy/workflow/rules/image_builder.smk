@@ -3,7 +3,7 @@ def get_original_image_location(wildcards):
 
 rule classifier_to_tif:
     input:
-        model=config["dataset_dir"] + "models/{model_name}.sav",
+        model=config["results_dir"] + "models/{model_name}.sav",
         dataset=config["dataset_dir"] + "dataset/total_features_{classifier}.npy",
     output:
         config["results_dir"] + "images/classified/{classifier}_{model_name}.tif"
