@@ -95,8 +95,10 @@ Downscaling is possible by using ``-d <scale>``
 
 Example: ```-i <path> -O <path> -d <scale> -q <quarter>```
 
-Quarter numbers: 
-![Example2](https://github.com/devalk96/Project-Ra/blob/main/scripts/image_filters/docs/images/quarters4x4.jpg =250x250)
+Quarter numbers:   
+  
+<img src="https://github.com/devalk96/Project-Ra/blob/main/scripts/image_filters/docs/images/quarters4x4.jpg" width="450">
+
 
 ## Prerequisites
 * Python 
