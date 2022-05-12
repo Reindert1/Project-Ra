@@ -31,20 +31,30 @@ def appender(data_location, outfile, tempfile):
     for data_file in data_location:
         print(data_file)
         data = np.load(data_file, mmap_mode='r')
+        print(data.shape)
         rows = data.shape[0]
         cols += data.shape[1]
         dtype = data.dtype
 
     print(cols)
     print(rows)
+    #print(dtype)
+
     merged = np.memmap(tempfile, dtype=dtype, mode='w+', shape=(rows, cols))
     data_index = 0
     idx = 0
+    print(merged.shape)
+    print(tempfile)
     for data_file in data_location:
-        data = np.load(data_file, mmap_mode='c')
+        data = np.load(data_file, mmap_mode='r')
+        print(data.shape)
+        print(data.dtype)
         for col in range(data.shape[1]):
+            print(col)
+            #print(data[-1])
             merged[:, data_index] = data[:, col]
             data_index += 1
+            gc.collect()
         del data
         gc.collect()
         print(f"removing: {data_file}")
