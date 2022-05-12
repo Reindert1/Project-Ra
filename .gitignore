@@ -134,3 +134,5 @@ dmypy.json
 
 # No data in repo
 data/
+
+Ipy/config.yaml
