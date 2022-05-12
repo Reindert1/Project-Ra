@@ -93,7 +93,7 @@ Expects commandline input.
 Quarters can be selected by: using ``-q <querter>``  
 Downscaling is possible by using ``-d <scale>``  
 
-Example: ```-i <path> -O <path> -d <scale> -q <quarter>```
+Example: ```python3 image_partitioner.py -i <path> -O <path> -d <scale> -q <quarter>```
 
 Quarter numbers:   
   
