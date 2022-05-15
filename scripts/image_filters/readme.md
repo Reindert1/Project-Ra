@@ -1,6 +1,15 @@
 # Image filter tools #
 This package contains various scripts used in the pipeline for image filtering.
 
+
+``-i
+../data/Tile_r4-c4_Acquisition_Spec_3_452994970.tif
+-O
+output.tif
+-d
+0.1
+-q
+1``
 ## Tools
 
 - [img_to_label.py](#image_to_label)
@@ -12,6 +21,10 @@ This package contains various scripts used in the pipeline for image filtering.
     * [Guide](#Packages)
 
 - [contrast_matching.py](#contrast_matching.py)
+    * [About](#About)
+    * [Guide](#Guide)
+
+- [image_partitioner.py](#image_partitioner)
     * [About](#About)
     * [Guide](#Guide)
 
@@ -27,6 +40,7 @@ Non-coloured data is labeled as 0 and coloured data is labeled as 1.
 ### Guide
 Expects commandline input. Inputfile-path (-i) and outputfile-path (-o).  
 Example: ```python3 img_to_label.py -i data/inputfile -o data/outputfile```
+
 
 ## image_overlayer.py
 ### About 
@@ -67,6 +81,24 @@ This tool matches the contrast of an image to a reference image.
 ### Guide  
 Expects commandline input.  
 Example: ```python3 constrast_matching.py -s {source} -r {reference} -o {output}```
+
+
+## image_partitioner.py  
+### About 
+This tool makes it possible to downscale an image and grab quarters from the image.
+
+
+### Guide  
+Expects commandline input.  
+Quarters can be selected by: using ``-q <querter>``  
+Downscaling is possible by using ``-d <scale>``  
+
+Example: ```python3 image_partitioner.py -i <path> -O <path> -d <scale> -q <quarter>```
+
+Quarter numbers:   
+  
+<img src="https://github.com/devalk96/Project-Ra/blob/main/scripts/image_filters/docs/images/quarters4x4.jpg" width="450">
+
 
 ## Prerequisites
 * Python 
