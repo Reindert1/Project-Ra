@@ -22,9 +22,9 @@ def build_edges(image, save_location):
     #print(sobelxy.dtype)
     #print(edges.dtype)
 
-    #cv.imwrite("/commons/Themas/Thema11/Giepmans/work/sobel.tif", sobelxy)
-
-    #cv.imwrite("/commons/Themas/Thema11/Giepmans/work/edges.tif", edges)
+    # cv.imwrite("/commons/Themas/Thema11/Giepmans/work/tmp/sobel.tif", sobelxy)
+    #
+    # cv.imwrite("/commons/Themas/Thema11/Giepmans/work/tmp/edges.tif", edges)
 
     full_arr = np.expand_dims(sobelxy.flatten().transpose(), axis=1)
     #print(full_arr.shape)
@@ -37,6 +37,8 @@ def build_edges(image, save_location):
 def main():
     input = snakemake.input[0] #"/commons/Themas/Thema11/Giepmans/Tile_r4-c7_Acquisition Spec 3_452994970.tif" #snakemake.input[0]
     output = snakemake.output[0] #"/commons/Themas/Thema11/Giepmans/" #snakemake.output[0]
+    #input = "/commons/Themas/Thema11/Giepmans/work/tmp/larger_data.tif"
+    #output = "/commons/Themas/Thema11/Giepmans/work/tmp/larger_data.tif"
     build_edges(input, output)
     return 0
 

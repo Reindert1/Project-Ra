@@ -15,6 +15,8 @@ import sys
 def build_gaussian(image, save_location, layers=1):
     image_array = cv.imread(image, cv.IMREAD_GRAYSCALE)
     layer = image_array.copy()
+    original_size = layer.shape
+
     gaus_np = np.array(layer).flatten().transpose()
     gaus_np = gaus_np.reshape(gaus_np.shape[0], 1)
 
@@ -23,6 +25,8 @@ def build_gaussian(image, save_location, layers=1):
         lay2 = layer.copy()
         for j in range(i + 1):
             lay2 = cv.pyrUp(lay2)
+
+        lay2 = cv.resize(lay2, original_size, interpolation=cv.INTER_AREA)
 
         gaus_np = np.append(gaus_np, np.expand_dims(lay2.flatten().transpose(), axis=1), axis=1)
 

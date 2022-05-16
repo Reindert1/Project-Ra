@@ -59,6 +59,7 @@ def main():
     np.random.seed(666)
     palettedata = []
     classifiers_list = snakemake.config["classifiers"]
+    print(classifiers_list)
     for _ in range(len(classifiers_list)):
         palettedata.extend(list(np.random.choice(range(256), size=3)))
         print(palettedata)
@@ -76,7 +77,7 @@ def main():
 
 
 if __name__ == '__main__':
-    with open(snakemake.log[0], "w") as log_file:
-        sys.stderr = sys.stdout = log_file
+    #with open(snakemake.log[0], "w") as log_file:
+    #    sys.stderr = sys.stdout = log_file
         exitcode = main()
         sys.exit(exitcode)
