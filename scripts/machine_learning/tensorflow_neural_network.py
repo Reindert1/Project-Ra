@@ -1,12 +1,14 @@
 import numpy as np
 import tensorflow as tf
+import pickle
+from sklearn.model_selection import train_test_split
 print("TensorFlow version:", tf.__version__)
 
 BATCH_SIZE = 64
 SHUFFLE_BUFFER_SIZE = 100
 
 model = tf.keras.Sequential([
-    tf.keras.layers.Flatten(input_shape=(28, 28)),
+    tf.keras.layers.Dense(128, activation='relu', input_shape=(None, 64, 14)),
     tf.keras.layers.Dense(128, activation='relu'),
     tf.keras.layers.Dense(10)
 ])
@@ -19,25 +21,30 @@ loss_fn = tf.keras.losses.SparseCategoricalCrossentropy(from_logits=True)
 
 
 def main():
-    data_loc = ...
+    data = np.load("/Users/rfvis/Documents/GitHub/Project-Ra/data/r4-c7_nucleus.npy", allow_pickle=True)
 
-    with np.load(data_loc) as data:
-        train_examples = data['x_train']
-        train_labels = data['y_train']
-        test_examples = data['x_test']
-        test_labels = data['y_test']
+    x_train, x_val, y_train, y_val = train_test_split(data[:, :-1],
+                                                      data[:, -1],
+                                                      random_state=42)
+    print("Fit model on training data")
+    history = model.fit(
+        x_train,
+        y_train,
+        batch_size=64,
+        epochs=2,
+        validation_data=(x_val, y_val),
+    )
 
-    train_dataset = tf.data.Dataset.from_tensor_slices((train_examples, train_labels))
-    test_dataset = tf.data.Dataset.from_tensor_slices((test_examples, test_labels))
+    # Evaluate the model on the test data using `evaluate`
+    print("Evaluate on test data")
+    results = model.evaluate(x_val, y_val, batch_size=128)
+    print("test loss, test acc:", results)
 
-    train_dataset = train_dataset.shuffle(SHUFFLE_BUFFER_SIZE).batch(BATCH_SIZE)
-    test_dataset = test_dataset.batch(BATCH_SIZE)
-
-    # train
-    model.fit(train_dataset, epochs=10)
-
-    # eval
-    model.evaluate(test_dataset, verbose=2)
+    # Generate predictions (probabilities -- the output of the last layer)
+    # on new data using `predict`
+    print("Generate predictions for 3 samples")
+    predictions = model.predict(x_val[:50])
+    print("predictions shape:", predictions.shape)
 
     return 0
 
