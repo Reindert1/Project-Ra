@@ -10,9 +10,10 @@ SHUFFLE_BUFFER_SIZE = 100
 
 model = tf.keras.Sequential([
     tf.keras.layers.Dense(128, activation='relu', input_shape=(109,)),
+    tf.keras.layers.Dropout(0.2),
     tf.keras.layers.Dense(128, activation='relu'),
-    tf.keras.layers.Dense(64, activation='sigmoid'),
-    tf.keras.layers.Dense(32)
+    tf.keras.layers.Dense(64, activation='tanh'),
+    tf.keras.layers.Dense(2, activation='softmax')
 ])
 
 model.compile(optimizer=tf.keras.optimizers.Adam(),
@@ -33,18 +34,16 @@ def main():
     history = model.fit(
         x_train,
         y_train,
-        epochs=10,
+        epochs=5,
         validation_data=(x_test, y_test),
     )
-
-    print("Using model:\n", model)
 
     # Evaluate the model on the test data using `evaluate`
     print("Evaluate on test data")
     results = model.evaluate(x_test, y_test, batch_size=150)
     print("test loss, test acc:", results)
 
-    predictions = model.predict(x_test)
+    model.save('saved_model/my_model.pb')
 
     return 0
 
