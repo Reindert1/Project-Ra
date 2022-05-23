@@ -115,3 +115,37 @@ rule decision_tree:
         config["results_dir"] + "benchmarks/models/DecisionTree.benchmark.txt"
     script:
         "../scripts/machine_learning/decisiontree.py"
+
+rule SVM:
+    input:
+        config["dataset_dir"] + "dataset/train.h5py"
+    output:
+        model=config["results_dir"] + "models/SVM.sav",
+        metrics=config["results_dir"] + "model_metrics/SVM.sav"
+    threads:
+        1
+    message:
+        "Training SVM classifier"
+    log:
+        config["results_dir"] + "logs/models/SVM.log"
+    benchmark:
+        config["results_dir"] + "benchmarks/models/SVM.benchmark.txt"
+    script:
+        "../scripts/machine_learning/SVM.py"
+
+# rule Kernel:
+#     input:
+#         config["dataset_dir"] + "dataset/train.h5py"
+#     output:
+#         model=config["results_dir"] + "models/Kernel.sav",
+#         metrics=config["results_dir"] + "model_metrics/Kernel.sav"
+#     threads:
+#         1
+#     message:
+#         "Training SVM classifier"
+#     log:
+#         config["results_dir"] + "logs/models/Kernel.log"
+#     benchmark:
+#         config["results_dir"] + "benchmarks/models/Kernel.benchmark.txt"
+#     script:
+#         "../scripts/machine_learning/kernel_approximation.py"

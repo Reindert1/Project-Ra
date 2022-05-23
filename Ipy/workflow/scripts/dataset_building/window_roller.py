@@ -21,7 +21,7 @@ def window_maker(array, window_size=(3, 3)):
     array = np.pad(array, [(horizontal_pad, vertical_pad), (horizontal_pad, vertical_pad)],
                    mode='constant', constant_values=0)
     strides = array.strides * 2
-    shape = (y_size, x_size) + window_size
+    shape = (x_size, y_size) + window_size
     return np.lib.stride_tricks.as_strided(array, shape, strides)
 
 

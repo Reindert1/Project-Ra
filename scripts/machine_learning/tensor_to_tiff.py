@@ -14,11 +14,13 @@ import random
 import numpy as np
 import sys
 import h5py
-import numpy as np
 import cv2 as cv
 import gc
 from sklearn.model_selection import train_test_split
 from PIL import Image
+import tensorflow as tf
+from tensorflow import keras
+from tensorflow.keras.models import Sequential, save_model, load_model
 
 
 def validation_generator(instances, batch_size):
@@ -28,18 +30,14 @@ def validation_generator(instances, batch_size):
 
 def model_to_tif(model_file, save_loc, dataset_loc, palette, original_image_loc):
 
-    loaded_model = pickle.load(open(model_file, 'rb'))
-    #full_pred = loaded_model.predict(data)
+    loaded_model = keras.models.load_model(model_file)
     x_data = np.load(dataset_loc, mmap_mode="r")
-
+    x_data = x_data[:, :-1]
     full_pred = []
-    #full_pred = np.empty()
-    for val_batch in validation_generator(x_data, 50000):
-        #np.append(full_pred, loaded_model.predict(val_batch))\
-        #print(val_batch)
-        pred = loaded_model.predict(np.array(val_batch))
-        #print(np.unique(pred))
-        full_pred.extend(pred)
+
+    for val_batch in validation_generator(x_data, 5000):
+        pred = loaded_model(np.array(val_batch))
+        full_pred.extend(tf.argmax(pred, 1))
 
     full_pred = np.asarray(full_pred)
     image_array = cv.imread(original_image_loc, cv.IMREAD_GRAYSCALE)
@@ -47,9 +45,6 @@ def model_to_tif(model_file, save_loc, dataset_loc, palette, original_image_loc)
     del image_array
     gc.collect()
     full_pred = np.reshape(full_pred, shape)
-    print(np.unique(full_pred))
-
-    #full_pred = full_pred.reshape(16384, 16384)
     full_image = Image.fromarray(full_pred, mode="P")
     full_image.putpalette(palette)
     full_image.save(save_loc)
@@ -58,8 +53,7 @@ def model_to_tif(model_file, save_loc, dataset_loc, palette, original_image_loc)
 def main():
     np.random.seed(666)
     palettedata = []
-    classifiers_list = snakemake.config["classifiers"]
-    print(classifiers_list)
+    classifiers_list = [1]
     for _ in range(len(classifiers_list)):
         palettedata.extend(list(np.random.choice(range(256), size=3)))
         print(palettedata)
@@ -70,14 +64,15 @@ def main():
                        * (num_entries_palette
                           - num_entries_data))
 
-    model_to_tif(snakemake.input[0], snakemake.output[0], #snakemake.wildcard["classifier"],
-                 snakemake.input[1], palettedata, snakemake.params["original_image_location"])
+    model_to_tif("/Users/rfvis/Documents/GitHub/Project-Ra/scripts/machine_learning/saved_model/my_model.pb",
+            "/Users/rfvis/Documents/GitHub/Project-Ra/scripts/machine_learning/saved_model/img/tensorflow_model.tif",
+                 "/Users/rfvis/Documents/GitHub/Project-Ra/data/dataset/full_classification.npy",
+                 palettedata,
+                 "/Users/rfvis/Documents/GitHub/Project-Ra/data/nucleus_color_cleaned.tif")
 
     return 0
 
 
 if __name__ == '__main__':
-    #with open(snakemake.log[0], "w") as log_file:
-    #    sys.stderr = sys.stdout = log_file
-        exitcode = main()
-        sys.exit(exitcode)
+    exitcode = main()
+    sys.exit(exitcode)
