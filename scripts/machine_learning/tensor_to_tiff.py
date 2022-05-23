@@ -4,7 +4,7 @@
 Script to segment a given image using a given classifier
 """
 
-__author__ = "Skippybal"
+__author__ = "Skippybal & Reindert1"
 __version__ = "0.1"
 
 import math
@@ -43,8 +43,6 @@ def model_to_tif(model_file, save_loc, dataset_loc, palette, original_image_loc)
     full_pred = np.asarray(full_pred)
     image_array = cv.imread(original_image_loc, cv.IMREAD_GRAYSCALE)
     shape = image_array.shape
-    del image_array
-    gc.collect()
     full_pred = np.reshape(full_pred, shape)
     full_image = Image.fromarray(full_pred, mode="P")
     full_image.putpalette(palette)
@@ -65,11 +63,12 @@ def main():
                        * (num_entries_palette
                           - num_entries_data))
 
-    model_to_tif("/Users/rfvis/Documents/GitHub/Project-Ra/scripts/machine_learning/saved_model/my_model.pb",
-            "/Users/rfvis/Documents/GitHub/Project-Ra/scripts/machine_learning/saved_model/img/tensorflow_model.tif",
-                 "/Users/rfvis/Documents/GitHub/Project-Ra/data/dataset/full_classification.npy",
-                 palettedata,
-                 "/Users/rfvis/Documents/GitHub/Project-Ra/data/nucleus_color_cleaned.tif")
+    model_location = ...
+    save_location = ...
+    data_location = ...
+    original_location = ...
+
+    model_to_tif(model_location, save_location, data_location, palettedata, original_location)
 
     return 0
 
