@@ -31,11 +31,12 @@ def validation_generator(instances, batch_size):
 def model_to_tif(model_file, save_loc, dataset_loc, palette, original_image_loc):
 
     loaded_model = keras.models.load_model(model_file)
+    loaded_model.summary()
     x_data = np.load(dataset_loc, mmap_mode="r")
     x_data = x_data[:, :-1]
     full_pred = []
 
-    for val_batch in validation_generator(x_data, 5000):
+    for val_batch in validation_generator(x_data, 500):
         pred = loaded_model(np.array(val_batch))
         full_pred.extend(tf.argmax(pred, 1))
 
