@@ -9,6 +9,8 @@ __version__ = "0.1"
 
 import random
 import sys
+
+import numpy.random
 from sklearn import metrics
 from sklearn.ensemble import VotingClassifier
 from sklearn.linear_model import LogisticRegression
@@ -78,23 +80,51 @@ def model_to_tif(model, x_data, palette, original_image_loc, save_loc):
 
 def main():
     random.seed(42)
-    data = np.load("/local-fs/bachelor-students/2021-2022/Thema12/ra_data/stripes8/dataset/full_classification.npy")
+    data = np.load("/local-fs/bachelor-students/2021-2022/Thema12/ra_data/small_test/dataset/full_classification.npy")
     x_train, x_test, y_train, y_test = train_test_split(data[:, :-1], data[:, -1], test_size=0.33,
                                                         random_state=42)
 
-    indexes = list(range(0, len(x_train)))
-    random.shuffle(indexes)
+    # indexes = list(range(0, len(x_train)))
+    # random.shuffle(indexes)
+
+    indexes = {}
+
+    for i in np.unique(data[:, -1]):
+        #print(i)
+        #idxs = np.where(data[:, -1] == i)[0]
+        idxs = np.where(y_train == i)[0]
+        #print(idxs[:10])
+        indexes[i] = idxs
+
+    random_data_idx = []
+
+    for index in indexes:
+        index_list = indexes[index]
+        # print(index_list.shape)
+        small = numpy.random.choice(index_list, 2000)
+
+        # print(small.shape)
+        # print(small[:10])
+        random_data_idx.extend(small)
+
+    print(len(random_data_idx))
 
     svms = []
-    print(indexes[:10])
+    # print(indexes[:10])
+    #
+    # index = 0
+    rand_x = x_train[random_data_idx]
+    rand_y = y_train[random_data_idx]
+    print(rand_x[:10])
+    print(rand_y[:10])
+    #
+    svms.append((0, train_svm(rand_x, x_test, rand_y, y_test)))
 
-    index = 0
-
-    for mini_batch_x, mini_batch_y in batch_generator(x_train, y_train, indexes, 1028):
-        index += 1
-        # print(mini_batch_y)
-
-        svms.append((index, train_svm(mini_batch_x, x_test, mini_batch_y, y_test)))
+    # for mini_batch_x, mini_batch_y in batch_generator(x_train, y_train, indexes, 1028):
+    #     index += 1
+    #     # print(mini_batch_y)
+    #
+    #     svms.append((index, train_svm(mini_batch_x, x_test, mini_batch_y, y_test)))
 
     np.random.seed(666)
     palettedata = []
@@ -110,8 +140,10 @@ def main():
                        * (num_entries_palette
                           - num_entries_data))
 
-    model_to_tif(svms[0], data[:, :-1], palettedata, "/commons/Themas/Thema11/Giepmans/work/tmp/larger_data.tif",
-                 "/commons/Themas/Thema11/Giepmans/work/SVM_Run/pred.tif")
+    #model_to_tif(svms[0], data[:, :-1], palettedata, "/commons/Themas/Thema11/Giepmans/work/tmp/larger_data.tif",
+    #             "/commons/Themas/Thema11/Giepmans/work/SVM_Run/pred_2.tif")
+    model_to_tif(svms[0], data[:, :-1], palettedata, "/commons/Themas/Thema11/Giepmans/work/train_small_r4_c7.tif",
+                 "/commons/Themas/Thema11/Giepmans/work/SVM_Run/pred_2k.tif")
 
 
 
