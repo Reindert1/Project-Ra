@@ -133,6 +133,23 @@ rule SVM:
     script:
         "../scripts/machine_learning/SVM.py"
 
+rule SVM_sampling:
+    input:
+        config["dataset_dir"] + "dataset/full_classification.npy"
+    output:
+        model=config["results_dir"] + "models/SVMsampling.sav",
+        metrics=config["results_dir"] + "model_metrics/SVMsampling.sav"
+    threads:
+        1
+    message:
+        "Training SVM_sampling classifier"
+    log:
+        config["results_dir"] + "logs/models/SVMsampling.log"
+    benchmark:
+        config["results_dir"] + "benchmarks/models/SVMsampling.benchmark.txt"
+    script:
+        "../scripts/machine_learning/SVM_sampling.py"
+
 # rule Kernel:
 #     input:
 #         config["dataset_dir"] + "dataset/train.h5py"

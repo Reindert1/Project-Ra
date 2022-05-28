@@ -1,0 +1,107 @@
+#!usr/bin/env python3
+
+"""
+Script to run SVM classifier on a given dataset
+"""
+
+__author__ = "Skippybal"
+__version__ = "0.1"
+
+import pickle
+import random
+import sys
+import numpy as np
+import numpy.random
+from sklearn import metrics
+from sklearn.model_selection import train_test_split
+from sklearn.svm import SVC
+
+import h5py
+
+
+def batch_generator(instances, ys, batch_size):
+    for i in range(0, len(instances), batch_size):
+        yield instances[i:i+batch_size], ys[i:i+batch_size]
+
+
+def validation_generator(instances, batch_size):
+    for i in range(0, len(instances), batch_size):
+        yield instances[i:i + batch_size]
+
+
+def train_svm(x_train, x_val, y_train, y_val, save_loc, metric_loc):
+    model = SVC(random_state=0)
+    metric_dict = {"Model": "SVM_sampling"}
+    print(f"current: SVM_sampling")
+    model.fit(x_train, y_train)
+
+    pickle.dump(model, open(save_loc, 'wb'))
+
+    y_pred = []
+    for val_batch in validation_generator(x_val, 50000):
+        y_pred.extend(model.predict(val_batch))
+    accuracy = metrics.accuracy_score(y_val, y_pred)
+    #metric_dict["Accuracy"] = accuracy
+
+    confus_matrix = metrics.confusion_matrix(y_val, y_pred)
+    # roc = metrics.roc_curve(y_val, y_pred)
+    # roc_auc_curve = metrics.roc_auc_score(y_val, y_pred)
+    balanced_accuracy_score = metrics.balanced_accuracy_score(y_val, y_pred)
+
+    metric_dict["Accuracy"] = accuracy
+    metric_dict["confus_matrix"] = confus_matrix
+    # metric_dict["roc"] = roc
+    # metric_dict["roc_auc_curve"] = roc_auc_curve
+    metric_dict["balanced_accuracy_score"] = balanced_accuracy_score
+
+    pickle.dump(metric_dict, open(metric_loc, 'wb'))
+    print("Accuracy:", metrics.accuracy_score(y_val, y_pred))
+
+    return 0
+
+
+def main():
+    numpy_file = snakemake.input[0]
+    save_location = snakemake.output["model"]
+    metric_loc = snakemake.output["metrics"]
+
+    random.seed(42)
+    data = np.load(numpy_file)
+    x_train, x_test, y_train, y_test = train_test_split(data[:, :-1], data[:, -1], test_size=0.33,
+                                                        random_state=42)
+    indexes = {}
+
+    for i in np.unique(data[:, -1]):
+        idxs = np.where(y_train == i)[0]
+        indexes[i] = idxs
+
+    random_data_idx = []
+
+    for index in indexes:
+        index_list = indexes[index]
+        small = numpy.random.choice(index_list, 2000)
+
+        random_data_idx.extend(small)
+
+    print(len(random_data_idx))
+
+    svms = []
+
+    rand_x = x_train[random_data_idx]
+    rand_y = y_train[random_data_idx]
+    print(rand_x[:10])
+    print(rand_y[:10])
+
+    svms.append((0, train_svm(rand_x, x_test, rand_y, y_test, save_location, metric_loc)))
+
+    #train_svm(x_train, x_val, y_train, y_val, save_location, metric_loc)
+
+
+    return 0
+
+
+if __name__ == '__main__':
+    # with open(snakemake.log[0], "w") as log_file:
+    #     sys.stderr = sys.stdout = log_file
+        exitcode = main()
+        sys.exit(exitcode)

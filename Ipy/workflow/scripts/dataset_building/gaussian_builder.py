@@ -30,7 +30,10 @@ def build_gaussian(image, save_location, layers=1):
 
         gaus_np = np.append(gaus_np, np.expand_dims(lay2.flatten().transpose(), axis=1), axis=1)
 
-    np.save(save_location, gaus_np)
+    print(gaus_np.shape)
+    print(gaus_np[:, 1:].shape)
+
+    np.save(save_location, gaus_np[:, 1:])
     return 0
 
 
