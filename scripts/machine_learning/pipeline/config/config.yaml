@@ -1,0 +1,8 @@
+# Directories
+data_dir: data/
+model_py_loc: workflow/scripts/model.py
+input_data: ../model/full_classification.npy
+model_export: output/model/
+
+# Options
+early_stopping: True
