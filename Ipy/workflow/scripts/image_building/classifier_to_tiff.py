@@ -37,7 +37,10 @@ def model_to_tif(model_file, save_loc, dataset_loc, palette, original_image_loc)
     for val_batch in validation_generator(x_data, 50000):
         #np.append(full_pred, loaded_model.predict(val_batch))\
         #print(val_batch)
-        val_batch_normal = val_batch / 255
+        if "SVMsampling" in snakemake.input[0]:
+            val_batch_normal = val_batch / 255
+        else:
+            val_batch_normal = val_batch
         pred = loaded_model.predict(np.array(val_batch_normal))
         #print(np.unique(pred))
         full_pred.extend(pred)

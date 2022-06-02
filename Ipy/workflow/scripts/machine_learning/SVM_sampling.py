@@ -13,7 +13,8 @@ import sys
 import numpy as np
 import numpy.random
 from sklearn import metrics
-from sklearn.model_selection import train_test_split
+from sklearn.experimental import enable_halving_search_cv
+from sklearn.model_selection import train_test_split, HalvingGridSearchCV
 from sklearn.svm import SVC
 # from tune_sklearn import TuneSearchCV
 # from ray import tune
@@ -51,7 +52,16 @@ def train_svm(x_train, x_val, y_train, y_val, save_loc, metric_loc):
     #                      search_optimization="hyperopt"
     #                      )
 
-    model.fit(x_train, y_train)
+    param_grid = {'kernel': ('poly', 'rbf'),
+                  'gamma': ('scale', 'auto'),
+                  'C': [1, 10, 100]}
+    base_estimator = SVC(gamma='scale')
+    model = HalvingGridSearchCV(base_estimator, param_grid, cv=5,
+                             factor=3, min_resources="exhaust").fit(x_train, y_train)
+
+    print(model.best_params_)
+
+    #model.fit(x_train, y_train)
 
     pickle.dump(model, open(save_loc, 'wb'))
 
@@ -103,9 +113,10 @@ def main():
 
     random_data_idx = []
 
+    numpy.random.seed(42)
     for index in indexes:
         index_list = indexes[index]
-        small = numpy.random.choice(index_list, 2000)
+        small = numpy.random.choice(index_list, 4000)
 
         random_data_idx.extend(small)
 
@@ -119,8 +130,6 @@ def main():
     print(rand_y[:10])
 
     svms.append((0, train_svm(rand_x, x_test, rand_y, y_test, save_location, metric_loc)))
-
-    # train_svm(x_train, x_val, y_train, y_val, save_location, metric_loc)
 
     return 0
 
