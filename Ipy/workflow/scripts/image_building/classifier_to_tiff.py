@@ -12,6 +12,7 @@ import pickle
 import random
 
 import numpy as np
+from scipy.stats import mode
 import sys
 import h5py
 import numpy as np
@@ -41,9 +42,20 @@ def model_to_tif(model_file, save_loc, dataset_loc, palette, original_image_loc)
             val_batch_normal = val_batch / 255
         else:
             val_batch_normal = val_batch
-        pred = loaded_model.predict(np.array(val_batch_normal))
-        #print(np.unique(pred))
-        full_pred.extend(pred)
+
+        if isinstance(loaded_model, list):
+            temp_pred = []
+            for model in loaded_model:
+                temp_pred.append(model.predict(np.array(val_batch_normal)))
+            m = mode(temp_pred)
+            #print(list(m.mode[0]))
+            full_pred.extend(list(m.mode[0]))
+            #print(m)
+
+        else:
+            pred = loaded_model.predict(np.array(val_batch_normal))
+            #print(np.unique(pred))
+            full_pred.extend(pred)
 
     full_pred = np.asarray(full_pred)
     image_array = cv.imread(original_image_loc, cv.IMREAD_GRAYSCALE)
