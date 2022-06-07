@@ -13,7 +13,8 @@ import sys
 import numpy as np
 import numpy.random
 from sklearn import metrics
-from sklearn.model_selection import train_test_split
+from sklearn.experimental import enable_halving_search_cv
+from sklearn.model_selection import train_test_split, HalvingGridSearchCV
 from sklearn.svm import SVC
 # from tune_sklearn import TuneSearchCV
 # from ray import tune
@@ -51,9 +52,19 @@ def train_svm(x_train, x_val, y_train, y_val, save_loc, metric_loc):
     #                      search_optimization="hyperopt"
     #                      )
 
-    model.fit(x_train, y_train)
+    param_grid = {'kernel': ('poly', 'rbf'),
+                  'gamma': ('scale', 'auto'),
+                  'C': [1, 10, 100]}
+    #base_estimator = SVC(gamma='scale')
+    base_estimator = SVC()
+    model = HalvingGridSearchCV(base_estimator, param_grid, cv=5,
+                             factor=3, min_resources="exhaust").fit(x_train, y_train)
 
-    pickle.dump(model, open(save_loc, 'wb'))
+    print(model.best_params_)
+
+    #model.fit(x_train, y_train)
+
+    #pickle.dump(model, open(save_loc, 'wb'))
 
     y_train_pred = []
     for val_batch in validation_generator(x_train, 50000):
@@ -83,7 +94,7 @@ def train_svm(x_train, x_val, y_train, y_val, save_loc, metric_loc):
     pickle.dump(metric_dict, open(metric_loc, 'wb'))
     print("Accuracy:", metrics.accuracy_score(y_val, y_pred))
 
-    return 0
+    return model
 
 
 def main():
@@ -92,35 +103,41 @@ def main():
     metric_loc = snakemake.output["metrics"]
 
     random.seed(42)
+    numpy.random.seed(42)
     data = np.load(numpy_file)
     x_train, x_test, y_train, y_test = train_test_split(data[:, :-1], data[:, -1], test_size=0.33,
                                                         random_state=42)
     indexes = {}
-
-    for i in np.unique(data[:, -1]):
-        idxs = np.where(y_train == i)[0]
-        indexes[i] = idxs
-
-    random_data_idx = []
-
-    for index in indexes:
-        index_list = indexes[index]
-        small = numpy.random.choice(index_list, 2000)
-
-        random_data_idx.extend(small)
-
-    print(len(random_data_idx))
-
     svms = []
 
-    rand_x = x_train[random_data_idx]
-    rand_y = y_train[random_data_idx]
-    print(rand_x[:10])
-    print(rand_y[:10])
+    for svm_index in range(3):
 
-    svms.append((0, train_svm(rand_x, x_test, rand_y, y_test, save_location, metric_loc)))
+        for i in np.unique(data[:, -1]):
+            idxs = np.where(y_train == i)[0]
+            indexes[i] = idxs
 
-    # train_svm(x_train, x_val, y_train, y_val, save_location, metric_loc)
+        random_data_idx = []
+
+        for index in indexes:
+            index_list = indexes[index]
+            small = numpy.random.choice(index_list, 500)
+
+            random_data_idx.extend(small)
+
+        print(len(random_data_idx))
+
+
+        rand_x = x_train[random_data_idx]
+        rand_y = y_train[random_data_idx]
+        print(rand_x[:10])
+        print(rand_y[:10])
+
+        # svms[svm_index] = train_svm(rand_x, x_test, rand_y, y_test, save_location, metric_loc)
+        svms.append(train_svm(rand_x, x_test, rand_y, y_test, save_location, metric_loc))
+        #print(svms)
+
+    pickle.dump(svms, open(save_location, 'wb'))
+    print(svms)
 
     return 0
 

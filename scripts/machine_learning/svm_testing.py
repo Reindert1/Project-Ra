@@ -14,7 +14,8 @@ import numpy.random
 from sklearn import metrics
 from sklearn.ensemble import VotingClassifier
 from sklearn.linear_model import LogisticRegression
-from sklearn.model_selection import train_test_split
+from sklearn.experimental import enable_halving_search_cv
+from sklearn.model_selection import train_test_split, HalvingGridSearchCV, HalvingRandomSearchCV
 from sklearn.svm import SVC
 from mlxtend.classifier import StackingClassifier
 import copy
@@ -44,9 +45,18 @@ def validation_generator(instances, batch_size):
 
 
 def train_svm(x_train, x_val, y_train, y_val):
-    model = SVC(random_state=0)
+    # model = SVC(random_state=0)
     print(f"current: SVM")
-    model.fit(x_train, y_train)
+    # model.fit(x_train, y_train)
+
+    param_grid = {'kernel': ('poly', 'rbf'),
+                  'gamma': ('scale', 'auto'),
+                  'C': [1, 10, 100]}
+    base_estimator = SVC(gamma='scale')
+    model = HalvingGridSearchCV(base_estimator, param_grid, cv=5,
+                             factor=3, min_resources="exhaust").fit(x_train, y_train)
+
+    print(model.best_params_)
 
     y_pred = []
     for val_batch in validation_generator(x_val, 50000):
@@ -80,6 +90,7 @@ def model_to_tif(model, x_data, palette, original_image_loc, save_loc):
 
 def main():
     random.seed(42)
+    numpy.random.seed(42)
     data = np.load("/local-fs/bachelor-students/2021-2022/Thema12/ra_data/small_test/dataset/full_classification.npy")
     x_train, x_test, y_train, y_test = train_test_split(data[:, :-1], data[:, -1], test_size=0.33,
                                                         random_state=42)
@@ -101,7 +112,7 @@ def main():
     for index in indexes:
         index_list = indexes[index]
         # print(index_list.shape)
-        small = numpy.random.choice(index_list, 2000)
+        small = numpy.random.choice(index_list, 4000)
 
         # print(small.shape)
         # print(small[:10])
@@ -143,7 +154,7 @@ def main():
     #model_to_tif(svms[0], data[:, :-1], palettedata, "/commons/Themas/Thema11/Giepmans/work/tmp/larger_data.tif",
     #             "/commons/Themas/Thema11/Giepmans/work/SVM_Run/pred_2.tif")
     model_to_tif(svms[0], data[:, :-1], palettedata, "/commons/Themas/Thema11/Giepmans/work/train_small_r4_c7.tif",
-                 "/commons/Themas/Thema11/Giepmans/work/SVM_Run/pred_2k.tif")
+                 "/commons/Themas/Thema11/Giepmans/work/SVM_Run/pred_help.tif")
 
 
 
