@@ -3,6 +3,23 @@ data_dir: data/
 model_py_loc: workflow/scripts/model.py
 input_data: ../model/full_classification.npy
 model_export: output/model/
+graph_export: output/graphs/
+image_output: output/classified/image/
 
-# Options
+
+# Model
+trained_model: output/model/trained_model.h5
+model_history: output/model/model_history.csv
+## Model - Options
 early_stopping: True
+
+# Graphs
+graph_loss: output/graphs/loss.png
+graph_accuracy: output/graphs/accuracy.png
+
+
+# Prediction
+classified_image: output/classified/image/classified.png
+original_image_location: "../model/nucleus_color_cleaned.tif"
+
+

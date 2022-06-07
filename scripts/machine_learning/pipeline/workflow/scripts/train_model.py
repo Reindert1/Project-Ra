@@ -3,14 +3,13 @@ from tensorflow import keras
 from sklearn.model_selection import train_test_split
 import numpy as np
 import pathlib
+import os
 
 from model import create_model
 
 METRICS = [
-      "accuracy"
+    "accuracy",
 ]
-
-
 
 def load_data(nyp_path):
     path = pathlib.Path(nyp_path)
@@ -53,27 +52,36 @@ def train_model(data_path, model_save_path, model=None,
     if log_training:
         callbacks.append(tf.keras.callbacks.CSVLogger(log_training, separator=",", append=True))
 
-    print("Fit model on training data")
+    print("[INFO]\tFit model on training data")
     history = model.fit(x_train, y_train, epochs=150, validation_split=0.25,
                         callbacks=callbacks)
 
-
-    print("Evaluate on test data")
+    print("[INFO]\tEvaluating on test data")
     results = model.evaluate(x_test, y_test, batch_size=150)
-    print("test loss, test acc:", results)
+    print("[INFO]\ttest loss, test acc:", results)
 
-    print("saving model!")
+    print("[INFO]\tsaving model!")
     save_model(model_save_path, model)
 
     return 1
 
 
 if __name__ == '__main__':
-    # TODO Callback toggling
-    model: tf.keras.Sequential = create_model((109,), metrics=METRICS)
-    print(f"Input: {snakemake.input[0]}")
-    print(f"Model output: {snakemake.output[0]}")
-    print(f"Early stopping: {snakemake.params['early_stopping']}")
+    history_path = snakemake.output[1]
+    input_path = snakemake.input[0]
+    model_output_path = snakemake.output[0]
 
-    trained_model = train_model(snakemake.input[0], snakemake.output[0],
-                                model=model, early_stopping=snakemake.params["early_stopping"], log_training="history.csv")
+    # Remove history.csv
+    if os.path.exists(history_path):
+        os.remove(history_path)
+
+    # Create model
+    model: tf.keras.Sequential = create_model((109,), metrics=METRICS)
+
+    print(f"\n[INFO]\tInput data: {pathlib.Path(input_path)}")
+    print(f"[INFO]\tModel output: {pathlib.Path(model_output_path)}")
+    print(f"[INFO]\tEarly stopping: {snakemake.params['early_stopping']}\n")
+
+    trained_model = train_model(input_path, model_output_path,
+                                model=model, early_stopping=snakemake.params["early_stopping"],
+                                log_training=history_path)

@@ -8,7 +8,7 @@ def load_data(path: str):
 
 
 def plot_accuracy(df: pd.DataFrame) -> plt:
-    graph = plt.figure()
+    plt.figure()
     plt.plot(df['accuracy'])
     plt.plot(df['val_accuracy'])
     plt.title('model accuracy')
@@ -19,7 +19,7 @@ def plot_accuracy(df: pd.DataFrame) -> plt:
 
 
 def plot_loss(df: pd.DataFrame) -> plt:
-    graph = plt.figure()
+    plt.figure()
     plt.plot(df['loss'])
     plt.plot(df['val_loss'])
     plt.title('model loss')
@@ -30,8 +30,10 @@ def plot_loss(df: pd.DataFrame) -> plt:
 
 
 if __name__ == '__main__':
-    data: pd.DataFrame = load_data("../data/history.csv")
-    plot_accuracy(data).savefig("../data/graphs/accuracy.png")
-    plot_loss(data).savefig("../data/graphs/loss.png")
+    accuracy_path = snakemake.output[0]
+    loss_path = snakemake.output[1]
+    data: pd.DataFrame = load_data(snakemake.input[0])
+    plot_accuracy(data).savefig(accuracy_path)
+    plot_loss(data).savefig(loss_path)
 
 

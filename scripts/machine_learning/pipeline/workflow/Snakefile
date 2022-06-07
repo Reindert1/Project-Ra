@@ -1,18 +1,12 @@
 configfile: "config/config.yaml"
 
 
-rule train_model:
-    input:
-        data_location = config["input_data"]
-    output:
-        config["model_export"] + "trained_model.h5"
-
-    params:
-        early_stopping = config["early_stopping"]
-
-    script:
-        "scripts/train_model.py"
+include: "rules/train_model.smk"
+include: "rules/graph_training.smk"
+include: "rules/predict.smk"
 
 rule all:
     input:
-        config["model_export"] + "trained_model.h5"
+        accuracy=config["graph_accuracy"],
+        loss=config["graph_loss"],
+        save_location= config["classified_image"],

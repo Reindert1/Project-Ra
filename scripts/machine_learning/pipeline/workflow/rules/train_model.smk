@@ -1,9 +1,12 @@
 rule train_model:
     input:
         data_location = config["input_data"],
-        early_stopping = config["early_stopping"]
     output:
-        config["model_export"] + "trained_model.h5"
+        trained_model = config["trained_model"],
+        history_location= config["model_history"]
+
+    params:
+        early_stopping = config["early_stopping"]
 
     script:
         "../scripts/train_model.py"
