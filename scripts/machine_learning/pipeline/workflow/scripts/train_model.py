@@ -52,15 +52,15 @@ def train_model(data_path, model_save_path, model=None,
     if log_training:
         callbacks.append(tf.keras.callbacks.CSVLogger(log_training, separator=",", append=True))
 
-    print("[INFO]\tFit model on training data")
+    print("[INFO]\tFitting model on training data...")
     history = model.fit(x_train, y_train, epochs=150, validation_split=0.25,
                         callbacks=callbacks)
 
-    print("[INFO]\tEvaluating on test data")
+    print("[INFO]\tEvaluating on test data...")
     results = model.evaluate(x_test, y_test, batch_size=150)
     print("[INFO]\ttest loss, test acc:", results)
 
-    print("[INFO]\tsaving model!")
+    print("[INFO]\tsaving model...")
     save_model(model_save_path, model)
 
     return 1
