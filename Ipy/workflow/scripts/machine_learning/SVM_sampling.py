@@ -110,7 +110,7 @@ def main():
     indexes = {}
     svms = []
 
-    for svm_index in range(3):
+    for svm_index in range(5):
 
         for i in np.unique(data[:, -1]):
             idxs = np.where(y_train == i)[0]
