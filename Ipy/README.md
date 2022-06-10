@@ -141,9 +141,8 @@ of an image.
 * K.A. Notebomer
   * k.a.notebomer@st.hanze.nl
   * [Skippybal](https://github.com/Skippybal)
- 
- 
-## Acknowledgements
-I would like to thank S.J. Bouwman ([devalk96](https://github.com/devalk96)) for developing the 
-image_overlayer and classifier_cleaner scripts, and letting me convert them into 
-scripts that can be used with snakemake.
+
+
+* S.J. Bouwman
+  * s.j.bouwman@st.hanze.nl
+  * [devalk96](https://github.com/devalk96)
