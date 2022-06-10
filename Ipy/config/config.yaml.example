@@ -1,26 +1,42 @@
 datadir: /commons/Themas/Thema11/Giepmans/ #/Thema11/Ra/data/
 
-dataset_dir: /tmp/ra_data/edges_included_3/ #/Thema11/Ipy/results_nucleus_manual_sgd/
-results_dir: /commons/Themas/Thema11/Giepmans/work/Edge_run_4/ #/Thema11/Ipy/results_nucleus_manual_sgd/
+dataset_dir: /local-fs/bachelor-students/2021-2022/Thema12/ra_data/stripes_test_10/
+results_dir: /commons/Themas/Thema11/Giepmans/work/stripes_test_10/ #/Thema11/Ipy/results_nucleus_manual_sgd/
 
-train_data: Tile_r4-c7_Acquisition Spec 3_452994970.tif
+train_data: work/tmp/larger_data.tif #work/train_small_r4_c7.tif #work/tmp/larger_data.tif #work/train_small_r4_c7.tif
 
 classifiers:
-#  mitchodira: r4-c7_mithochondria.tif
-  nucleus: work/r4-c7_nucleus.tif
+  #mitchodira: work/r4-c4mito_small.tif #r4-c7_mithochondria.tif
+  nucleus: work/tmp/mask_larger_data.tif #work/r4-c4nuc_small.tif #work/tmp/mask_larger_data.tif r4-c4nuc_small.tif
 
 segment:
-  r4: Tile_r4-c7_Acquisition Spec 3_452994970.tif
+#  r4: Tile_r4-c7_Acquisition Spec 3_452994970.tif
   #r5: Tile_r4-c4_Acquisition Spec 3_452994970.tif
   #r5_matched: work/Tile_r4-c4_Acquisition Spec 3_452994970_matched.tif
+ full: work/tmp/larger_data.tif
+ second: work/tmp/larger_data_flip.tif
+# white: work/tmp/full_white.tif
+#  train: work/train_small_r4_c7.tif
+#  test: work/test_small_r4_c4.tif
+#  test_matched: work/matched_small.tif
 
 gaussian_layers: 6 #4
 window_size:
-  !!python/tuple [5,5] #[5,5] #[3,3]
+  !!python/tuple [10,10] #[5,5] #[3,3]
 
 algorithms:
-  #- SGD
-  - SGDmanual
-  #- DecisionTree
-  #- MultinomialNB
-  #- ZeroR
+  #- SVM
+  #- Kernel
+#  - SGD
+#  - SGDmanual
+#  - DecisionTree
+#  - MultinomialNB
+#  - GaussianNB
+  - ZeroR
+#  - SVMsampling
+  - NN
+
+
+## Model - Options
+early_stopping: True
+max_epochs: 2
