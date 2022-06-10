@@ -1,6 +1,11 @@
 def get_original_image_location(wildcards):
     return config["datadir"] + ALL_DATA[wildcards.classifier] #config["datadir"] + config["classifiers"][wildcards.classifier]
 
+def get_overlay(wildcards):
+    if wildcards.model_name == "NN":
+        return config["results_dir"] + f"images/classified/NN/{wildcards.classifier}.png"
+    return config["results_dir"] + f"images/classified/{wildcards.classifier}_{wildcards.model_name}.tif"
+
 rule classifier_to_tif:
     input:
         model=config["results_dir"] + "models/{model_name}.sav",
@@ -23,7 +28,8 @@ rule classifier_to_tif:
 rule image_overlayer:
     input:
         background=get_original_image_location,
-        overlay=config["results_dir"] + "images/classified/{classifier}_{model_name}.tif",
+
+        overlay= get_overlay #config["results_dir"] + "images/classified/{classifier}_{model_name}.tif",
     output:
         config["results_dir"] + "images/overlayed/{classifier}_{model_name}_overlay.tif"
     threads:
