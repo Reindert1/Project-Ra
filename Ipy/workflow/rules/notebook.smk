@@ -18,7 +18,9 @@ rule create_output_notebook:
                       classifier=config["segment"], model_name=config["algorithms"]),
         metrics=expand(config["results_dir"] + "model_metrics/{model_name}.sav",
                        model_name=rem_nn()),
-        graphs=get_graphs()
+        graphs=get_graphs(),
+        reports=expand(config["results_dir"] + "model_metrics/{model_name}_report.sav",
+                       model_name=rem_nn())
     output:
         temp(touch(config["results_dir"] + "notebook.done"))
     threads:

@@ -17,6 +17,8 @@ import h5py
 import numpy as np
 import cv2 as cv
 import gc
+
+from sklearn.metrics import classification_report
 from sklearn.model_selection import train_test_split
 from PIL import Image
 from joblib import parallel_backend
@@ -39,6 +41,8 @@ def train_bayes(x_train, x_val, y_train, y_val, save_loc, metric_loc):
     metric_dict["Accuracy"] = accuracy
     pickle.dump(metric_dict, open(metric_loc, 'wb'))
     print("Accuracy:", metrics.accuracy_score(y_val, y_pred))
+
+    pickle.dump(classification_report(y_val, y_pred), open(snakemake.output["report"], 'wb'))
 
     return 0
 

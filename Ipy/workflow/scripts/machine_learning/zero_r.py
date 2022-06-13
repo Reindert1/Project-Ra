@@ -13,6 +13,7 @@ import h5py
 
 from sklearn import metrics
 from sklearn.dummy import DummyClassifier
+from sklearn.metrics import classification_report
 
 
 def train_dummy(x_train, x_val, y_train, y_val, save_loc, metric_loc):
@@ -37,6 +38,8 @@ def train_dummy(x_train, x_val, y_train, y_val, save_loc, metric_loc):
     metric_dict["Accuracy"] = accuracy
     pickle.dump(metric_dict, open(metric_loc, 'wb'))
     print("Accuracy:", accuracy)
+
+    pickle.dump(classification_report(y_val, y_pred), open(snakemake.output["report"], 'wb'))
 
     return 0
 

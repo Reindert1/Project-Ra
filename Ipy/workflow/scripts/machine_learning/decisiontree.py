@@ -13,6 +13,7 @@ import sys
 from sklearn.linear_model import SGDClassifier
 from scipy.stats import uniform, loguniform
 from sklearn import metrics
+from sklearn.metrics import classification_report
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.utils import compute_sample_weight, compute_class_weight
 from skopt.space import Real, Integer, Categorical
@@ -124,6 +125,8 @@ def train_tree(x_train, x_val, y_train, y_val, save_loc, metric_loc):
 
     pickle.dump(metric_dict, open(metric_loc, 'wb'))
     print("Accuracy:", metrics.accuracy_score(y_val, y_pred))
+
+    pickle.dump(classification_report(y_val, y_pred), open(snakemake.output["report"], 'wb'))
 
     return 0
 

@@ -19,7 +19,8 @@ rule sgd_classifier:
         config["dataset_dir"] + "dataset/train.h5py"
     output:
         model=config["results_dir"] + "models/SGD.sav",
-        metrics=config["results_dir"] + "model_metrics/SGD.sav"
+        metrics=config["results_dir"] + "model_metrics/SGD.sav",
+        report=config["results_dir"] + "model_metrics/SGD_report.sav"
     threads:
         1
     message:
@@ -36,7 +37,8 @@ rule sgd_classifier_manual:
         config["dataset_dir"] + "dataset/train.h5py"
     output:
         model=config["results_dir"] + "models/SGDmanual.sav",
-        metrics=config["results_dir"] + "model_metrics/SGDmanual.sav"
+        metrics=config["results_dir"] + "model_metrics/SGDmanual.sav",
+        report=config["results_dir"] + "model_metrics/SGDmanual_report.sav"
     threads:
         1
     message:
@@ -53,7 +55,8 @@ rule gaussian_nb:
         config["dataset_dir"] + "dataset/train.h5py"
     output:
         model=config["results_dir"] + "models/GaussianNB.sav",
-        metrics=config["results_dir"] + "model_metrics/GaussianNB.sav"
+        metrics=config["results_dir"] + "model_metrics/GaussianNB.sav",
+        report=config["results_dir"] + "model_metrics/GaussianNB_report.sav"
     threads:
         1
     message:
@@ -70,7 +73,8 @@ rule zero_r:
         config["dataset_dir"] + "dataset/train.h5py"
     output:
         model=config["results_dir"] + "models/ZeroR.sav",
-        metrics=config["results_dir"] + "model_metrics/ZeroR.sav"
+        metrics=config["results_dir"] + "model_metrics/ZeroR.sav",
+        report=config["results_dir"] + "model_metrics/ZeroR_report.sav"
     threads:
         1
     message:
@@ -87,7 +91,8 @@ rule multinomial_nb:
         config["dataset_dir"] + "dataset/train.h5py"
     output:
         model=config["results_dir"] + "models/MultinomialNB.sav",
-        metrics=config["results_dir"] + "model_metrics/MultinomialNB.sav"
+        metrics=config["results_dir"] + "model_metrics/MultinomialNB.sav",
+        report=config["results_dir"] + "model_metrics/MultinomialNB_report.sav"
     threads:
         1
     message:
@@ -104,7 +109,8 @@ rule decision_tree:
         config["dataset_dir"] + "dataset/train.h5py"
     output:
         model=config["results_dir"] + "models/DecisionTree.sav",
-        metrics=config["results_dir"] + "model_metrics/DecisionTree.sav"
+        metrics=config["results_dir"] + "model_metrics/DecisionTree.sav",
+        report=config["results_dir"] + "model_metrics/DecisionTree_report.sav"
     threads:
         1
     message:
@@ -121,7 +127,9 @@ rule SVM:
         config["dataset_dir"] + "dataset/train.h5py"
     output:
         model=config["results_dir"] + "models/SVM.sav",
-        metrics=config["results_dir"] + "model_metrics/SVM.sav"
+        metrics=config["results_dir"] + "model_metrics/SVM.sav",
+        report=config["results_dir"] + "model_metrics/SVM_report.sav"
+
     threads:
         1
     message:
@@ -138,7 +146,8 @@ rule SVM_sampling:
         config["dataset_dir"] + "dataset/full_classification.npy"
     output:
         model=config["results_dir"] + "models/SVMsampling.sav",
-        metrics=config["results_dir"] + "model_metrics/SVMsampling.sav"
+        metrics=config["results_dir"] + "model_metrics/SVMsampling.sav",
+        report=config["results_dir"] + "model_metrics/SVMsampling_report.sav"
     threads:
         1
     message:

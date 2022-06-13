@@ -13,6 +13,7 @@ import sys
 import h5py
 import numpy as np
 from sklearn import metrics
+from sklearn.metrics import classification_report
 from sklearn.naive_bayes import MultinomialNB
 from sklearn.utils import compute_sample_weight
 
@@ -56,6 +57,8 @@ def train_bayes(x_train, x_val, y_train, y_val, save_loc, metric_loc):
     metric_dict["Accuracy"] = accuracy
     pickle.dump(metric_dict, open(metric_loc, 'wb'))
     print("Accuracy:", metrics.accuracy_score(y_val, y_pred))
+
+    pickle.dump(classification_report(y_val, y_pred), open(snakemake.output["report"], 'wb'))
 
     return 0
 

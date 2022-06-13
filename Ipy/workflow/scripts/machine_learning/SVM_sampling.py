@@ -16,6 +16,8 @@ from sklearn import metrics
 from sklearn.experimental import enable_halving_search_cv
 from sklearn.model_selection import train_test_split, HalvingGridSearchCV
 from sklearn.svm import SVC
+from sklearn.metrics import classification_report
+from scipy.stats import mode
 # from tune_sklearn import TuneSearchCV
 # from ray import tune
 
@@ -66,33 +68,35 @@ def train_svm(x_train, x_val, y_train, y_val, save_loc, metric_loc):
 
     #pickle.dump(model, open(save_loc, 'wb'))
 
-    y_train_pred = []
-    for val_batch in validation_generator(x_train, 50000):
-        val_batch_normal = val_batch
-        y_train_pred.extend(model.predict(val_batch_normal))
-    accuracy = metrics.accuracy_score(y_train, y_train_pred)
-    metric_dict["Train_Accuracy"] = accuracy
-
-    y_pred = []
-    for val_batch in validation_generator(x_val, 50000):
-        val_batch_normal = val_batch / 255
-        y_pred.extend(model.predict(val_batch_normal))
-    accuracy = metrics.accuracy_score(y_val, y_pred)
-    # metric_dict["Accuracy"] = accuracy
-
-    confus_matrix = metrics.confusion_matrix(y_val, y_pred)
-    # roc = metrics.roc_curve(y_val, y_pred)
-    # roc_auc_curve = metrics.roc_auc_score(y_val, y_pred)
-    balanced_accuracy_score = metrics.balanced_accuracy_score(y_val, y_pred)
-
-    metric_dict["Test_Accuracy"] = accuracy
-    metric_dict["confus_matrix"] = confus_matrix
-    # metric_dict["roc"] = roc
-    # metric_dict["roc_auc_curve"] = roc_auc_curve
-    metric_dict["balanced_accuracy_score"] = balanced_accuracy_score
-
-    pickle.dump(metric_dict, open(metric_loc, 'wb'))
-    print("Accuracy:", metrics.accuracy_score(y_val, y_pred))
+    # y_train_pred = []
+    # for val_batch in validation_generator(x_train, 50000):
+    #     val_batch_normal = val_batch
+    #     y_train_pred.extend(model.predict(val_batch_normal))
+    # accuracy = metrics.accuracy_score(y_train, y_train_pred)
+    # metric_dict["Train_Accuracy"] = accuracy
+    #
+    # y_pred = []
+    # for val_batch in validation_generator(x_val, 50000):
+    #     val_batch_normal = val_batch / 255
+    #     y_pred.extend(model.predict(val_batch_normal))
+    # accuracy = metrics.accuracy_score(y_val, y_pred)
+    # # metric_dict["Accuracy"] = accuracy
+    #
+    # confus_matrix = metrics.confusion_matrix(y_val, y_pred)
+    # # roc = metrics.roc_curve(y_val, y_pred)
+    # # roc_auc_curve = metrics.roc_auc_score(y_val, y_pred)
+    # balanced_accuracy_score = metrics.balanced_accuracy_score(y_val, y_pred)
+    #
+    # metric_dict["Test_Accuracy"] = accuracy
+    # metric_dict["confus_matrix"] = confus_matrix
+    # # metric_dict["roc"] = roc
+    # # metric_dict["roc_auc_curve"] = roc_auc_curve
+    # metric_dict["balanced_accuracy_score"] = balanced_accuracy_score
+    #
+    # pickle.dump(metric_dict, open(metric_loc, 'wb'))
+    # print("Accuracy:", metrics.accuracy_score(y_val, y_pred))
+    #
+    # pickle.dump(classification_report(y_val, y_pred), open(snakemake.output["report"], 'wb'))
 
     return model
 
@@ -135,6 +139,49 @@ def main():
         # svms[svm_index] = train_svm(rand_x, x_test, rand_y, y_test, save_location, metric_loc)
         svms.append(train_svm(rand_x, x_test, rand_y, y_test, save_location, metric_loc))
         #print(svms)
+
+    metric_dict = {"Model": "SVM_sampling"}
+
+    y_train_pred = []
+    for val_batch in validation_generator(x_train, 50000):
+        val_batch_normal = val_batch / 255
+        temp_pred = []
+        for model in svms:
+            temp_pred.append(model.predict(np.array(val_batch_normal)))
+        m = mode(temp_pred)
+        # print(list(m.mode[0]))
+        y_train_pred.extend(list(m.mode[0]))
+
+    accuracy = metrics.accuracy_score(y_train, y_train_pred)
+    metric_dict["Train_Accuracy"] = accuracy
+
+    y_pred = []
+    for val_batch in validation_generator(x_test, 50000):
+        val_batch_normal = val_batch / 255
+        temp_pred = []
+        for model in svms:
+            temp_pred.append(model.predict(np.array(val_batch_normal)))
+        m = mode(temp_pred)
+        # print(list(m.mode[0]))
+        y_pred.extend(list(m.mode[0]))
+    accuracy = metrics.accuracy_score(y_test, y_pred)
+    # metric_dict["Accuracy"] = accuracy
+
+    confus_matrix = metrics.confusion_matrix(y_test, y_pred)
+    # roc = metrics.roc_curve(y_val, y_pred)
+    # roc_auc_curve = metrics.roc_auc_score(y_val, y_pred)
+    balanced_accuracy_score = metrics.balanced_accuracy_score(y_test, y_pred)
+
+    metric_dict["Test_Accuracy"] = accuracy
+    metric_dict["confus_matrix"] = confus_matrix
+    # metric_dict["roc"] = roc
+    # metric_dict["roc_auc_curve"] = roc_auc_curve
+    metric_dict["balanced_accuracy_score"] = balanced_accuracy_score
+
+    pickle.dump(metric_dict, open(metric_loc, 'wb'))
+    print("Accuracy:", metrics.accuracy_score(y_test, y_pred))
+
+    pickle.dump(classification_report(y_test, y_pred), open(snakemake.output["report"], 'wb'))
 
     pickle.dump(svms, open(save_location, 'wb'))
     print(svms)

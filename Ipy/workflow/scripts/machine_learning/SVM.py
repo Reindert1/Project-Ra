@@ -10,6 +10,7 @@ __version__ = "0.1"
 import pickle
 import sys
 from sklearn import metrics
+from sklearn.metrics import classification_report
 from sklearn.svm import SVC
 
 import h5py
@@ -52,6 +53,8 @@ def train_svm(x_train, x_val, y_train, y_val, save_loc, metric_loc):
 
     pickle.dump(metric_dict, open(metric_loc, 'wb'))
     print("Accuracy:", metrics.accuracy_score(y_val, y_pred))
+
+    pickle.dump(classification_report(y_val, y_pred), open(snakemake.output["report"], 'wb'))
 
     return 0
 
