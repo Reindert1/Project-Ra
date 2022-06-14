@@ -23,6 +23,9 @@ from torchvision.utils import save_image
 import torchvision.transforms as T
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+# torch.set_num_threads(12)
+# thread = torch.get_num_threads()
+# print(thread)
 
 
 class ImageSet(Dataset):
@@ -158,35 +161,35 @@ def main(args):
 
     #dataset = ImageSet("data/larger_data.tif", "data/mask_larger_data_labels.tif", 25)
     #dataset = ImageSet("data/mask_larger_data_labels_redo.tif", "data/indexed_new_mask.png", 25)
-    dataset = ImageSet("data/mask_larger_data_labels_redo.tif", "data/indexed_new_mask.png", 28)
-    # print(dataset.image.unique())
-    # print(Image.open("data/mask_larger_data.tif").format )
-    # print(torch.from_numpy(cv2.imread("data/mask_larger_data.tif")).unique())
-    #print(dataset.image.shape)
-    #print(dataset.image.unique())
-    #print(dataset.valid_pos)
-    print(dataset.labels.unique())
-    #print(np.unique(np.asarray(Image.open("data/indexed_new_mask.tif"))))
-    #print(dataset.valid_pos)
-    print(np.where(dataset.labels == 0))
-
-    save_image(dataset.image, 'BIN_ima3.png')
-    #save_image(dataset.image, 'redone_labels.png')
+    # dataset = ImageSet("data/train_small_r4_c7.tif", "data/train_small_r4_c7_indexed_labels.png", 28)
+    # # print(dataset.image.unique())
+    # # print(Image.open("data/mask_larger_data.tif").format )
+    # # print(torch.from_numpy(cv2.imread("data/mask_larger_data.tif")).unique())
+    # #print(dataset.image.shape)
+    # #print(dataset.image.unique())
+    # #print(dataset.valid_pos)
     # print(dataset.labels.unique())
-
-    #print(dataset.rad)
-
-    #print(dataset[40000].shape)
-    # print(dataset[326].shape)
-    # save_image(dataset[326], 'BIN_ima.png')
-    # print(dataset.length)
-    # print(len(dataset))
-    #print(dataset.valid_pos.shape)
-
-    patch, label = dataset[len(dataset)-1]
-    # print(label)
-    # print(patch)
-    save_image(patch, 'BIN_ima2.png')
+    # #print(np.unique(np.asarray(Image.open("data/indexed_new_mask.tif"))))
+    # #print(dataset.valid_pos)
+    # print(np.where(dataset.labels == 0))
+    #
+    # save_image(dataset.image, 'BIN_ima3.png')
+    # #save_image(dataset.image, 'redone_labels.png')
+    # # print(dataset.labels.unique())
+    #
+    # #print(dataset.rad)
+    #
+    # #print(dataset[40000].shape)
+    # # print(dataset[326].shape)
+    # # save_image(dataset[326], 'BIN_ima.png')
+    # # print(dataset.length)
+    # # print(len(dataset))
+    # #print(dataset.valid_pos.shape)
+    #
+    # patch, label = dataset[len(dataset)-1]
+    # # print(label)
+    # # print(patch)
+    # save_image(patch, 'BIN_ima2.png')
     # save_image(dataset.image[:, 174, 325], 'BIN_ima2.png')
     #save_image(dataset[325 * 2 +1], 'BIN_ima2.png')
 
@@ -199,7 +202,7 @@ def main(args):
 
     batch_size = 32
 
-    dataset = ImageSet("data/larger_data.tif", "data/indexed_new_mask.png", 28)
+    dataset = ImageSet("data/train_small_r4_c7.tif", "data/train_small_r4_c7_indexed_mito.png", 28)
     dataloader = DataLoader(dataset=dataset, batch_size=batch_size, shuffle=True, num_workers=2)
 
     model = BastetNet().to(device)
@@ -251,7 +254,7 @@ def main(args):
         print(f'[{epoch + 1}] loss: {running_loss/n_iter:.3f}')
         #running_loss = 0.0
 
-    fullclassset = FullClassSet("data/larger_data.tif", 28)
+    fullclassset = FullClassSet("data/train_small_r4_c7.tif", 28)
     testloader = DataLoader(dataset=fullclassset, batch_size=batch_size, shuffle=False, num_workers=2)
 
     all = []
@@ -309,7 +312,7 @@ def main(args):
     # img.save("org.png")
 
 
-    save_image(cat, 'again.png')
+    save_image(cat, 'mitochondria.png')
     save_image(dataset.image, 'orginal.png')
 
     return 0
