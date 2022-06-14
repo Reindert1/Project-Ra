@@ -1,0 +1,26 @@
+configfile: "config/config.yaml"
+
+ALL_DATA = config["segment"].copy()
+ALL_DATA["train_data"] = config["train_data"]
+
+rule all:
+    input:
+        #config["dataset_dir"] + "dataset/total_features_train_data.npy",
+        #config["dataset_dir"] + "classifiers/full_classifier.npy"
+        #config["dataset_dir"] + "dataset/full_classification.npy"
+        #config["dataset_dir"] + "dataset/train.h5py"
+        #config["dataset_dir"] + "model/SGD.sav"
+        # config["results_dir"] + "images/r5_GaussianNB.tif",
+        # config["results_dir"] + "images/r5_SGD.tif"
+        #config["results_dir"] + "images/overlayed/r5_ZeroR_overlay.tif"
+        config["results_dir"] + "notebook.done"
+
+include: "rules/feature_extraction.smk"
+include: "rules/combine.smk"
+include: "rules/classifier_processing.smk"
+include: "rules/machine_learning.smk"
+include: "rules/image_builder.smk"
+include: "rules/notebook.smk"
+include: "rules/graph_training.smk"
+include: "rules/train_model.smk"
+include: "rules/predict.smk"

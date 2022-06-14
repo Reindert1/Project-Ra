@@ -23,8 +23,6 @@ class MainWindow(QMainWindow):
         self.run_options = {"model_path": None,
                             "pre_classification_image": None}
 
-
-
         #  Add model_setup
         self.model_setup = Model_Setup()
         self.model_setup.setParent(self.ui.frame_left)
@@ -32,17 +30,18 @@ class MainWindow(QMainWindow):
         layout: QtWidgets.QLayout = self.ui.frame_left.layout()
         layout.addWidget(self.model_setup)
 
+        # Tab management
+        self.tab_manager("close-all")
 
         # Set images
         im = "resources/development/example_images/placeholder.tif"
         self.set_pre_class_image(im)
 
-
-
         # button logic
-        self.model_setup.ui.button_load.clicked.connect(self.load_model_pressed)
-        self.ui.actionLoad_Model.triggered.connect(self.load_model_pressed)
+        self.model_setup.ui.button_load.clicked.connect(self.load_model_clicked)
+        self.ui.actionLoad_Model.triggered.connect(self.load_model_clicked)
         self.ui.btn_upload_image.clicked.connect(self.load_image_button_pressed)
+        self.model_setup.ui.button_new.clicked.connect(self.new_model_clicked)
 
     def set_pre_class_image(self, path):
         temp_path = "resources/temp"
@@ -93,9 +92,13 @@ class MainWindow(QMainWindow):
         return filename
 
     @Slot()
-    def load_model_pressed(self):
+    def new_model_clicked(self):
+        self.tab_manager("train")
+
+    @Slot()
+    def load_model_clicked(self):
         temp_path = "resources/model_history"
-        filename, _ = self.file_dialog(temp_path, "*h5")
+        filename, _ = self.file_dialog(temp_path, "*h5 *sav")
         if filename:
             self.print_to_debug(f"Added: {filename}", mode="debug")
             self.run_options["model"] = filename
@@ -105,6 +108,7 @@ class MainWindow(QMainWindow):
             self.loaded_model.ui.btn_close_model.clicked.connect(self.close_loaded_model_pressed)
             self.ui.frame_left.layout().addWidget(self.loaded_model, 0)
             self.loaded_model.show()
+            self.tab_manager("classify")
 
     @Slot()
     def close_loaded_model_pressed(self):
@@ -113,6 +117,7 @@ class MainWindow(QMainWindow):
             self.loaded_model.hide()
             self.model_setup.show()
             self.run_options["model"] = None
+            self.tab_manager("close-all")
         else:
             self.print_to_debug("Nothing to hide", mode="warning")
 
@@ -123,6 +128,32 @@ class MainWindow(QMainWindow):
             self.set_pre_class_image(path)
         else:
             self.print_to_debug("Canceled action: Upload image", mode="debug")
+
+    def tab_manager(self, tab_clicked=None):
+        self.print_to_debug(tab_clicked, mode="debug")
+
+        if tab_clicked == "classify":
+            self.ui.tabWidget_right_menu.setTabEnabled(1, True)
+            self.ui.tabWidget_right_menu.setTabVisible(1, True)
+
+            self.ui.tabWidget_right_menu.setTabEnabled(2, False)
+            self.ui.tabWidget_right_menu.setTabVisible(2, False)
+            self.ui.tabWidget_right_menu.setCurrentIndex(1)
+
+        elif tab_clicked == "train":
+            self.ui.tabWidget_right_menu.setTabEnabled(1, False)
+            self.ui.tabWidget_right_menu.setTabVisible(1, False)
+            self.ui.tabWidget_right_menu.setTabEnabled(2, True)
+            self.ui.tabWidget_right_menu.setTabVisible(2, True)
+            self.ui.tabWidget_right_menu.setCurrentIndex(2)
+
+        else:
+            self.ui.tabWidget_right_menu.setTabEnabled(1, False)
+            self.ui.tabWidget_right_menu.setTabVisible(1, False)
+            self.ui.tabWidget_right_menu.setTabEnabled(2, False)
+            self.ui.tabWidget_right_menu.setTabVisible(2, False)
+            self.ui.tabWidget_right_menu.setCurrentIndex(0)
+
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
