@@ -14,7 +14,7 @@ class PipeLineManager:
     def __init__(self):
         self.set_default_options()
 
-    def run_full(self):
+    def run_full(self, wd):
         removed_dirs = [
             "datasets",
             "results"
@@ -27,7 +27,7 @@ class PipeLineManager:
             if fullpath.exists():
                 shutil.rmtree(fullpath)
 
-        self.run_snakemake(4)
+        return self.run_snakemake(4, wd)
 
 
     def train_only(self, model):
@@ -40,6 +40,7 @@ class PipeLineManager:
         # Results --> results
         # Datasets --> datadir can same
         config = self.options
+        print("DIR", os.getcwd())
         with open(path, "w") as f:
             yaml.dump(config, f, allow_unicode=True, default_flow_style=False)
 
@@ -56,9 +57,10 @@ class PipeLineManager:
         self.options["results_dir"] = "../warehouse/results/"
         self.options["dataset_dir"] = "../warehouse/datasets/"
 
-    def run_snakemake(self, cores: int):
-        result = subprocess.run(['snakemake', f'-c{cores}'], stdout=subprocess.PIPE, cwd="Ipy")
-        print(result.stdout)
+    def run_snakemake(self, cores: int, wd: str):
+        result = subprocess.run(['snakemake', f'-c{cores}'], cwd=wd, capture_output=True, text=True)
+        print(result)
+        return result.stderr
 
 
 

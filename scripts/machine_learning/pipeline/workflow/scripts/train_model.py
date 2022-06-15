@@ -4,7 +4,8 @@ from sklearn.model_selection import train_test_split
 import numpy as np
 import pathlib
 import os
-
+import matplotlib.pyplot as plt
+import pandas as pd
 from model import create_model
 
 METRICS = [
@@ -53,9 +54,10 @@ def train_model(data_path, model_save_path, model=None,
         callbacks.append(tf.keras.callbacks.CSVLogger(log_training, separator=",", append=True))
 
     print("[INFO]\tFitting model on training data...")
-    history = model.fit(x_train, y_train, epochs=150, validation_split=0.25,
+    history = model.fit(x_train, y_train, epochs=2, validation_split=0.25,
                         callbacks=callbacks)
 
+    create_graphs(history)
     print("[INFO]\tEvaluating on test data...")
     results = model.evaluate(x_test, y_test, batch_size=150)
     print("[INFO]\ttest loss, test acc:", results)
@@ -65,8 +67,34 @@ def train_model(data_path, model_save_path, model=None,
 
     return 1
 
+def create_graphs(history):
+    print(history)
+    print(type(history))
+
+
+def plot_accuracy(df: pd.DataFrame) -> plt:
+    plt.figure()
+    plt.plot(df['accuracy'])
+    plt.plot(df['val_accuracy'])
+    plt.title('model accuracy')
+    plt.ylabel('accuracy')
+    plt.xlabel('epoch')
+    plt.legend(['train', 'test'], loc='upper left')
+    return plt
+
+
+def plot_loss(df: pd.DataFrame) -> plt:
+    plt.figure()
+    plt.plot(df['loss'])
+    plt.plot(df['val_loss'])
+    plt.title('model loss')
+    plt.ylabel('loss')
+    plt.xlabel('epoch')
+    plt.legend(['train', 'test'], loc='upper left')
+    return plt
 
 if __name__ == '__main__':
+
     history_path = snakemake.output[1]
     input_path = snakemake.input[0]
     model_output_path = snakemake.output[0]
