@@ -1,9 +1,12 @@
 import os.path
+import os
+import subprocess
 import sys
 import threading
 import typing
 import random
 import binascii
+import time
 
 from PySide6.QtWidgets import QApplication, QMainWindow, QFileDialog, QHeaderView
 from PySide6.QtCore import QFile
@@ -18,7 +21,7 @@ from EyeOfRa.scripts.frontend.model_setup import Model_Setup
 from EyeOfRa.scripts.backend.image_converter import convert as convert_image
 from EyeOfRa.scripts.frontend.loaded_model_widget import Loaded_Model_Widget
 from EyeOfRa.scripts.pipeline.pipeline_manager import PipeLineManager
-
+from EyeOfRa.scripts.frontend.loaded_classification_image import Loaded_Classification_Image
 # Check if darkmode is enabled
 import darkdetect
 
@@ -63,6 +66,13 @@ def default_run_options(train_data, classifiers, algorithm, gaussian_layers, ear
     options["results_dir"] = results_dir
     options["dataset_dir"] = dataset_dir
     return options
+
+
+def openImage(path):
+    imageViewerFromCommandLine = {'linux': 'xdg-open',
+                                  'win32': 'explorer',
+                                  'darwin': 'open'}[sys.platform]
+    subprocess.run([imageViewerFromCommandLine, path])
 
 
 class MainWindow(QMainWindow):
@@ -119,25 +129,6 @@ class MainWindow(QMainWindow):
     def start_training_pressed(self):
         algorithm = self.ui.comboBox_algorithm.currentText()
 
-
-        # options = {}
-        # options[
-        #     "datadir"] = ""
-        # options["train_data"] = train_data
-        # options["classifiers"] = classifiers
-        # options["algorithms"] = [algorithm]
-        # options["gaussian_layers"] = gaussian_layers
-        # options["window_size"] = (10, 10)
-        # options["early_stopping"] = early_stopping
-        # options["max_epochs"] = max_epochs
-        # options["segment"] = {"full": segment}
-        # options["results_dir"] = results_dir
-        # options["dataset_dir"] = dataset_dir
-
-        # def default_run_options(train_data, classifiers, algorithm, gaussian_layers, early_stopping,
-        #                         max_epochs, segment, results_dir, dataset_dir) -> {}:
-
-
         training = self.run_files["training"]
         masks = self.run_files["masks"]
         classification = self.run_files["classification"]
@@ -158,7 +149,10 @@ class MainWindow(QMainWindow):
 
 
     def run_snakemake(self, manager):
-        log = manager.run_full(wd="scripts/pipeline/Ipy")
+        manager.set_default_options()
+        # log = manager.run_full(wd="scripts/pipeline/Ipy")
+        time.sleep(1)
+        log = "Finished Training"
         return log
 
     def wrapped_worker(self, manager):
@@ -167,7 +161,9 @@ class MainWindow(QMainWindow):
 
     def thread_finished(self, log):
         self.print_to_debug(log, mode="warning")
+        path = "/Users/sanderbouwman/School/Thema11/Themaopdracht/Project-Ra/Project-Ra/EyeOfRa/scripts/pipeline/warehouse/results/images/overlayed/full_NN_overlay.tif"
 
+        openImage(path)
 
     @Slot()
     def select_metrics_export_path(self):

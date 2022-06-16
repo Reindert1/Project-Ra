@@ -14,7 +14,7 @@ class PipeLineManager:
     def __init__(self):
         self.set_default_options()
 
-    def run_full(self, wd):
+    def run_full(self, wd="Ipy"):
         removed_dirs = [
             "datasets",
             "results"
@@ -40,7 +40,6 @@ class PipeLineManager:
         # Results --> results
         # Datasets --> datadir can same
         config = self.options
-        print("DIR", os.getcwd())
         with open(path, "w") as f:
             yaml.dump(config, f, allow_unicode=True, default_flow_style=False)
 
@@ -57,9 +56,8 @@ class PipeLineManager:
         self.options["results_dir"] = "../warehouse/results/"
         self.options["dataset_dir"] = "../warehouse/datasets/"
 
-    def run_snakemake(self, cores: int, wd: str):
+    def run_snakemake(self, cores: int, wd: str = "Ipy"):
         result = subprocess.run(['snakemake', f'-c{cores}'], cwd=wd, capture_output=True, text=True)
-        print(result)
         return result.stderr
 
 
@@ -68,5 +66,5 @@ class PipeLineManager:
 if __name__ == '__main__':
     manager = PipeLineManager()
     manager.yaml_constructor("Ipy/config/config.yaml")
-    manager.run_full()
-    # manager.run_snakemake(cores=4)
+    output = manager.run_full()
+
