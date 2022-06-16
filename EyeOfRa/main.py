@@ -143,7 +143,7 @@ class MainWindow(QMainWindow):
 
         run_manager.yaml_constructor("scripts/pipeline/Ipy/config/config.yaml")
         run_manager.options = options
-        self.print_to_debug("Starting Thread for training")
+        self.print_to_debug("Starting Thread for training", mode="warning")
         x = threading.Thread(target=self.wrapped_worker, args=(run_manager,))
         x.start()
 
@@ -151,18 +151,20 @@ class MainWindow(QMainWindow):
     def run_snakemake(self, manager):
         manager.set_default_options()
         # log = manager.run_full(wd="scripts/pipeline/Ipy")
-        time.sleep(1)
+        time.sleep(32)
         log = "Finished Training"
         return log
 
     def wrapped_worker(self, manager):
+        self.ui.label_4.setText("Status: Running.....")
         log = self.run_snakemake(manager)
         self.thread_finished(log)
+        self.ui.label_4.setText("Status: Finished")
+
 
     def thread_finished(self, log):
         self.print_to_debug(log, mode="warning")
         path = "/Users/sanderbouwman/School/Thema11/Themaopdracht/Project-Ra/Project-Ra/EyeOfRa/scripts/pipeline/warehouse/results/images/overlayed/full_NN_overlay.tif"
-
         openImage(path)
 
     @Slot()
@@ -241,7 +243,7 @@ class MainWindow(QMainWindow):
             os.remove(export_name)
 
     def print_to_debug(self, string: str, mode="debug"):
-        debug = True
+        debug = False
         browser = self.ui.textBrowser_debug
         blackcolor = "black" if darkdetect.isLight() else "white"
         darkdetect.isDark()
