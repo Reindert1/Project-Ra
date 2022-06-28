@@ -1,12 +1,14 @@
 #!usr/bin/env python3
 
 """
+Patch-wise CNN implementation for image segmentation
 """
 
 __author__ = "Skippybal"
 __version__ = "0.1"
 
 import math
+import os
 import sys
 
 import cv2
@@ -20,6 +22,7 @@ import torchvision
 import torchvision.transforms as transforms
 from PIL import Image
 from torchvision.utils import save_image
+import argparse as ap
 import torchvision.transforms as T
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -120,7 +123,6 @@ class FullClassSet(Dataset):
 
         self.length = self.image.flatten().shape
 
-
     def __getitem__(self, index):
         x_position = index // self.shape[2] + self.pad
         y_position = index % self.shape[2] + self.pad
@@ -137,12 +139,12 @@ class FullClassSet(Dataset):
 class BastetNet(nn.Module):
     def __init__(self, in_channels=1, num_classes=2):
         super().__init__()
-        self.conv1 = nn.Conv2d(in_channels=in_channels, out_channels=8, kernel_size=(3, 3), stride=(1, 1), padding=(1,1))
-        self.pool = nn.MaxPool2d(kernel_size=(2,2), stride=(2,2))
+        self.conv1 = nn.Conv2d(in_channels=in_channels, out_channels=8, kernel_size=(3, 3), stride=(1, 1),
+                               padding=(1, 1))
+        self.pool = nn.MaxPool2d(kernel_size=(2, 2), stride=(2, 2))
         self.conv2 = nn.Conv2d(in_channels=8, out_channels=16, kernel_size=(3, 3), stride=(1, 1),
                                padding=(1, 1))
         self.pool2 = nn.MaxPool2d(kernel_size=(2, 2), stride=(2, 2))
-        #self.conv2 = nn.Conv2d(6, 16, 5)
         self.fc1 = nn.Linear(16 * 7 * 7, 128)
         self.fc2 = nn.Linear(128, 64)
         self.fc3 = nn.Linear(64, num_classes + 1)
@@ -157,7 +159,31 @@ class BastetNet(nn.Module):
         return x
 
 
-def main(args):
+def parse_args():
+    """
+    Parse command line arguments
+    """
+    argparser = ap.ArgumentParser(description="Image segmentation network")
+    argparser.add_argument("-e", action="store",
+                           dest="epochs", required=False, type=int,
+                           help="Number of epochs to train", default=3)
+    argparser.add_argument("-i", action="store", dest="input_file", type=str,
+                           required=True,
+                           help="Base image for segmentation")
+    argparser.add_argument("-m", action="store", dest="mask", type=str,
+                           required=True,
+                           help="Mask images, encoded with indexed colors")
+    argparser.add_argument("-s", dest="segment_files", action="store", type=str, nargs='+',
+                           help="Images to segment using the trained network", required=False)
+    argparser.add_argument("-sl", action="store", dest="save", type=str,
+                           required=False, default="model.pt",
+                           help="Path to store model")
+    args = argparser.parse_args()
+
+    return args
+
+
+def main():
 
     #dataset = ImageSet("data/larger_data.tif", "data/mask_larger_data_labels.tif", 25)
     #dataset = ImageSet("data/mask_larger_data_labels_redo.tif", "data/indexed_new_mask.png", 25)
@@ -199,10 +225,15 @@ def main(args):
     # first_data = dataset[0]
     # features, labels = first_data
     #print(features,labels)
+    args = parse_args()
+
+    image = args.input_file#"data/larger_data.tif"#args.input_file
+    mask = args.mask#"data/indexed_new_mask.png"#args.mask
 
     batch_size = 32
 
-    dataset = ImageSet("data/train_small_r4_c7.tif", "data/train_small_r4_c7_indexed_mito.png", 28)
+    #dataset = ImageSet("data/train_small_r4_c7.tif", "data/train_small_r4_c7_indexed_mito.png", 28)
+    dataset = ImageSet(image, mask, 28)
     dataloader = DataLoader(dataset=dataset, batch_size=batch_size, shuffle=True, num_workers=2)
 
     model = BastetNet().to(device)
@@ -215,7 +246,7 @@ def main(args):
     # summary(model, (6))
     criterion = nn.CrossEntropyLoss()
 
-    num_epochs = 1
+    num_epochs = args.epochs
     total_samples = len(dataset)
     n_iter = math.ceil(total_samples/batch_size)
     print(dataset.valid_pos)
@@ -254,70 +285,76 @@ def main(args):
         print(f'[{epoch + 1}] loss: {running_loss/n_iter:.3f}')
         #running_loss = 0.0
 
-    fullclassset = FullClassSet("data/train_small_r4_c7.tif", 28)
-    testloader = DataLoader(dataset=fullclassset, batch_size=batch_size, shuffle=False, num_workers=2)
+    torch.save(model.state_dict(), args.save)
 
-    all = []
+    for file in args.segment_files:
+        #fullclassset = FullClassSet("data/train_small_r4_c7.tif", 28)
+        fullclassset = FullClassSet(file, 28)
+        testloader = DataLoader(dataset=fullclassset, batch_size=batch_size, shuffle=False, num_workers=2)
 
-    correct = 0
-    total = 0
+        all = []
 
-    with torch.no_grad():
-        for data in testloader:
-            # images, labels = data
-            images = data.to(device=device)
-            #print(images.shape)
-            # calculate outputs by running images through the network
-            outputs = model(images)
-            # the class with the highest energy is what we choose as prediction
-            _, predicted = torch.max(outputs.data, 1)
-            all.append(predicted)
-            # total += labels.size(0)
-            # correct += (predicted == labels).sum().item()
+        correct = 0
+        total = 0
 
-    x = torch.tensor([[0, 0, 0], [255, 0, 0], [0, 0, 255]]).to(device)
+        with torch.no_grad():
+            for data in testloader:
+                # images, labels = data
+                images = data.to(device=device)
+                #print(images.shape)
+                # calculate outputs by running images through the network
+                outputs = model(images)
+                # the class with the highest energy is what we choose as prediction
+                _, predicted = torch.max(outputs.data, 1)
+                all.append(predicted)
+                # total += labels.size(0)
+                # correct += (predicted == labels).sum().item()
 
-    # cat = torch.unsqueeze(torch.cat(all, dim=0), dim=1)
-    cat = torch.cat(all, dim=0)
-    print(cat.shape)
-    cat = F.embedding(cat, x).permute(1, 0)
-    print(cat.shape)
-    print(cat)
-    print(fullclassset.image.shape[1:])
-    print(cat.reshape((3, fullclassset.image.shape[1], fullclassset.image.shape[2])).type(torch.float))
-    cat = cat.reshape((3, fullclassset.image.shape[1], fullclassset.image.shape[2])).type(torch.float)
+        x = torch.tensor([[0, 0, 0], [255, 0, 0], [0, 0, 255]]).to(device)
 
-    # print(cat.shape)
-    #cat = torch.unsqueeze(cat.reshape(fullclassset.image.shape[1:]).type(torch.float), 0)
-    #cat = cat.reshape(fullclassset.image.shape).type(torch.float)
+        # cat = torch.unsqueeze(torch.cat(all, dim=0), dim=1)
+        cat = torch.cat(all, dim=0)
+        print(cat.shape)
+        cat = F.embedding(cat, x).permute(1, 0)
+        print(cat.shape)
+        print(cat)
+        print(fullclassset.image.shape[1:])
+        print(cat.reshape((3, fullclassset.image.shape[1], fullclassset.image.shape[2])).type(torch.float))
+        cat = cat.reshape((3, fullclassset.image.shape[1], fullclassset.image.shape[2])).type(torch.float)
 
-
-    # x = torch.FloatTensor([[0, 0, 0], [255, 0, 0], [0, 0, 255], [0, 255, 0]])
-    # x = torch.tensor([[0, 0, 0], [255, 0, 0], [0, 0, 255], [0, 255, 0]])
-    #cat = torch.embedding(cat, )
-    # converted_tensor = torch.nn.functional.embedding(network_output, x).permute(0, 3, 1, 2)
-
-    # print(cat.unique())
-    print(cat.shape)
-    # print(cat.reshape(fullclassset.image.shape).shape)
-
-    # transform = T.ToPILImage()
-    #
-    # # convert the tensor to PIL image using above transform
-    # img = transform(cat)
-    #
-    # # display the PIL image
-    # #img.show()
-    # #Image.save(img,)
-    # img.save("org.png")
+        # print(cat.shape)
+        #cat = torch.unsqueeze(cat.reshape(fullclassset.image.shape[1:]).type(torch.float), 0)
+        #cat = cat.reshape(fullclassset.image.shape).type(torch.float)
 
 
-    save_image(cat, 'mitochondria.png')
-    save_image(dataset.image, 'orginal.png')
+        # x = torch.FloatTensor([[0, 0, 0], [255, 0, 0], [0, 0, 255], [0, 255, 0]])
+        # x = torch.tensor([[0, 0, 0], [255, 0, 0], [0, 0, 255], [0, 255, 0]])
+        #cat = torch.embedding(cat, )
+        # converted_tensor = torch.nn.functional.embedding(network_output, x).permute(0, 3, 1, 2)
+
+        # print(cat.unique())
+        print(cat.shape)
+        # print(cat.reshape(fullclassset.image.shape).shape)
+
+        # transform = T.ToPILImage()
+        #
+        # # convert the tensor to PIL image using above transform
+        # img = transform(cat)
+        #
+        # # display the PIL image
+        # #img.show()
+        # #Image.save(img,)
+        # img.save("org.png")
+
+        save_image(cat, f"{os.path.splitext(file)[0]}_segmented.tif")
+
+
+        # save_image(cat, 'mitochondria.png')
+        # save_image(dataset.image, 'orginal.png')
 
     return 0
 
 
 if __name__ == '__main__':
-    exitcode = main(sys.argv)
+    exitcode = main()
     sys.exit(exitcode)
