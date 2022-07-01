@@ -4,6 +4,7 @@ Project Ra is focused on trying to build an application that can annotate electr
 ## Table of content
 
 - [Project description](#project-description)
+- [Directory descriptions](#directory-descriptions)
 - [Installation](#installation)
     * [Prerequisites](#prerequisites)
     * [Packages](#packages)
@@ -14,6 +15,18 @@ Project Ra is focused on trying to build an application that can annotate electr
 This aim of this project is to build an application that can annotate electron microscopy data based on the user input. The goal is to make the application in such a way that a researcher can simply annotate a few cell components, and the application will learn which parts of the cell to annotate. After learning what to annotate, the application should annotate the entire image, and display the results back to the user.
 
 Machine learning algortihms will play a vital role in the successful completion of this project.
+
+## Directory descriptions
+
+|Name                                       |Contains                               |   
+|---                                        |---                                    |
+|Bastet                                     |Patch-wise CNN implementation          |
+|EyeOfRa                                    |GUI                                    |
+|Ipy                                        |Image segmentation pipeline            |
+|notebooks                                  |Notebooks used for research            |
+|presentations                              |End of sprint presentations            |
+|scripts                                    |Scripts used for research              |
+|testing environments                       |Test code for research                 |
 
 ## Installation
 To install simply clone this repo using the following command:  
